@@ -103,5 +103,6 @@ class Global {
     miyousheAcount = "";
     mid = "";
     mihoyoCookie = "";
+    userInfo = null;
   }
 }

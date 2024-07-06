@@ -82,7 +82,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
           return Column(children: [
             Container(
               padding: const EdgeInsets.all(16),
-              color: Colors.blue,
+              color: Colors.blue[100],
               child: Row(
                 children: [
                   const CircleAvatar(
@@ -93,7 +93,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                   Global.userInfo != null
                       ? Text(
                           "欢迎回来, ${Global.userInfo!.aid}",
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                          style: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w700),
                         )
                       : const Text("未登录"),
                   Spacer(),
