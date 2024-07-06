@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bruno/bruno.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/components/password.dart';
 import 'package:yuanmo_link/components/qr_code.dart';
-import 'package:yuanmo_link/model/qrcode.dart';
+import 'package:yuanmo_link/store/global.dart';
 
 class IndexScreen extends StatefulWidget {
   const IndexScreen({super.key});
@@ -19,7 +18,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
   // TabController
   late TabController _tabController;
   // qr code
-  String url = "";
+  String status = "";
   // selected
   late int selected = 0;
   // login picker tab
@@ -74,23 +73,65 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('登录 Picker 页面'),
+        title: const Text('绳网小助手-米游Link'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              '当前选择的登录项: $url',
-              style: TextStyle(fontSize: 20),
+      body: ListView.builder(
+        itemCount: Global.gameRoleList.length,
+        itemBuilder: (context, index) {
+          final role = Global.gameRoleList[index];
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: AssetImage(role.gameIcon ?? "assets/images/hk4e_cn.png") as ImageProvider,
+                      radius: 25,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      role.gameName,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                //循环 role.list
+                for (var gameRole in role.list)
+                  Card(
+                    margin: const EdgeInsets.only(top: 8, bottom: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                gameRole.nickname ?? "未知昵称",
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Text("${gameRole.regionName} - Lv.${gameRole.level}"),
+                            ],
+                          ),
+                          OutlinedButton(
+                            onPressed: () {
+                              // Handle button press
+                              final miHoYoUtils = MiHoYoUtils();
+                              miHoYoUtils.getAuthkey(gameRole);
+                            },
+                            child: const Text('获取抽卡链接'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _showLoginPicker,
-              child: Text('重新选择登录项'),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'qrcode.dart';
+part of 'mihoyo_qrcode.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
 QrcodeModel _$QrcodeModelFromJson(Map<String, dynamic> json) => QrcodeModel(
-      appId: json['appId'] as String,
+      appId: json['app_id'] as String,
       device: json['device'] as String,
       ticket: json['ticket'] as String,
       payload: json['payload'] as String,
@@ -15,7 +15,7 @@ QrcodeModel _$QrcodeModelFromJson(Map<String, dynamic> json) => QrcodeModel(
 
 Map<String, dynamic> _$QrcodeModelToJson(QrcodeModel instance) =>
     <String, dynamic>{
-      'appId': instance.appId,
+      'app_id': instance.appId,
       'device': instance.device,
       'ticket': instance.ticket,
       'payload': instance.payload,
@@ -46,7 +46,6 @@ Map<String, dynamic> _$QrCodeResultToJson(QrCodeResult instance) =>
 
 QrCodeStatus _$QrCodeStatusFromJson(Map<String, dynamic> json) => QrCodeStatus(
       stat: json['stat'] as String,
-      realnameInfo: json['realnameInfo'] as String,
       payload:
           QrCodeStatusPayload.fromJson(json['payload'] as Map<String, dynamic>),
     );
@@ -54,14 +53,13 @@ QrCodeStatus _$QrCodeStatusFromJson(Map<String, dynamic> json) => QrCodeStatus(
 Map<String, dynamic> _$QrCodeStatusToJson(QrCodeStatus instance) =>
     <String, dynamic>{
       'stat': instance.stat,
-      'realnameInfo': instance.realnameInfo,
       'payload': instance.payload,
     };
 
 QrCodeStatusPayload _$QrCodeStatusPayloadFromJson(Map<String, dynamic> json) =>
     QrCodeStatusPayload(
       proto: json['proto'] as String,
-      raw: QrCodeStatusRaw.fromJson(json['raw'] as Map<String, dynamic>),
+      raw: json['raw'] as String,
       ext: json['ext'] as String,
     );
 
@@ -75,12 +73,12 @@ Map<String, dynamic> _$QrCodeStatusPayloadToJson(
 
 QrCodeStatusRaw _$QrCodeStatusRawFromJson(Map<String, dynamic> json) =>
     QrCodeStatusRaw(
-      code: json['code'] as String,
-      message: json['message'] as String,
+      uid: json['uid'] as String,
+      token: json['token'] as String,
     );
 
 Map<String, dynamic> _$QrCodeStatusRawToJson(QrCodeStatusRaw instance) =>
     <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
+      'uid': instance.uid,
+      'token': instance.token,
     };

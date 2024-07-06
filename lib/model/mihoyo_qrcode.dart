@@ -1,8 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'qrcode.g.dart';
+part 'mihoyo_qrcode.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class QrcodeModel {
   final String appId;
   final String device;
@@ -10,7 +10,6 @@ class QrcodeModel {
   final String payload;
 
   QrcodeModel({required this.appId, required this.device, required this.ticket, required this.payload});
-
   factory QrcodeModel.fromJson(Map<String, dynamic> json) => _$QrcodeModelFromJson(json);
   Map<String, dynamic> toJson() => _$QrcodeModelToJson(this);
 }
@@ -44,15 +43,13 @@ class QrCodeResult {
 }
 
 // 获取轮训二维码返回的结果
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class QrCodeStatus {
   final String stat;
-  final String realnameInfo;
   final QrCodeStatusPayload payload;
 
   QrCodeStatus({
     required this.stat,
-    required this.realnameInfo,
     required this.payload,
   });
 
@@ -63,7 +60,7 @@ class QrCodeStatus {
 @JsonSerializable(genericArgumentFactories: true)
 class QrCodeStatusPayload {
   final String proto;
-  final QrCodeStatusRaw raw;
+  final String raw;
   final String ext;
 
   QrCodeStatusPayload({
@@ -78,12 +75,12 @@ class QrCodeStatusPayload {
 
 @JsonSerializable()
 class QrCodeStatusRaw {
-  final String code;
-  final String message;
+  final String uid;
+  final String token;
 
   QrCodeStatusRaw({
-    required this.code,
-    required this.message,
+    required this.uid,
+    required this.token,
   });
 
   factory QrCodeStatusRaw.fromJson(Map<String, dynamic> json) => _$QrCodeStatusRawFromJson(json);
