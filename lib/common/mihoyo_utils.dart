@@ -143,7 +143,6 @@ class MiHoYoUtils {
         (json) => MihoyoUserInfo.fromJson(json),
       );
       if (resp.retcode == 0) {
-        // 取出cookie
         return resp.data;
       } else {
         throw Exception("Failed to check scan status: ${resp.retcode}");
@@ -186,7 +185,7 @@ class MiHoYoUtils {
   }
 
   /// 获取所有游戏的游戏角色信息
-  Future<void> getGameRolesInfo(String cookie) async {
+  Future<List<GameRoleInfo>> getGameRolesInfo(String cookie) async {
     Global.gameRoleList = [];
     for (var game in Global.GameList) {
       final Response result = await _dio.get(
@@ -212,21 +211,20 @@ class MiHoYoUtils {
         if (resp.retcode == 0) {
           // 取出cookie
           if (resp.data.list.isNotEmpty) {
-            Global.gameRoleList
-                .add(GameRoleInfo(gameName: game.gameName, gameIcon: game.gameIcon, list: resp.data.list));
+            Global.gameRoleList.add(GameRoleInfo(
+                gameName: game.gameName, gameIcon: game.gameIcon, list: resp.data.list, baseWishUrl: game.baseWishUrl));
           }
         }
       }
     }
 
     // 将数据持久化
-    Global.saveGameRoleList(Global.gameRoleList);
+    // Global.saveGameRoleList(Global.gameRoleList);
+    return Global.gameRoleList;
   }
 
   /// 获取所有游戏内的抽卡链接
-  Future<void> getAuthkey(MihoyoGameRole role) async {
-    print(role);
-
+  Future<String?> getAuthkey(MihoyoGameRole role, GameRoleInfo info) async {
     int uid = int.parse(role.gameUid);
     final body = AuthKeyModel(gameBiz: role.gameBiz, gameUid: uid, authAppid: "webview_gacha", region: role.region);
 
@@ -247,18 +245,18 @@ class MiHoYoUtils {
     );
 
     if (result.statusCode == 200) {
-      print(result.data);
-
-      // final MihoyoResult<MihoyoGameRoleData> resp = MihoyoResult<MihoyoGameRoleData>.fromJson(
-      //   result.data,
-      //   (json) => MihoyoGameRoleData.fromJson(json),
-      // );
-      // if (resp.retcode == 0) {
-      //   // 取出cookie
-      //   if (resp.data.list.isNotEmpty) {
-      //     Global.gameRoleList.add(GameRoleInfo(gameName: game.gameName, gameIcon: game.gameIcon, list: resp.data.list));
-      //   }
-      // }
+      final MihoyoResult<AuthKeyResult> resp = MihoyoResult<AuthKeyResult>.fromJson(
+        result.data,
+        (json) => AuthKeyResult.fromJson(json),
+      );
+      if (resp.retcode == 0) {
+        // 取出cookie
+        if (resp.data.authkey.isNotEmpty) {
+          final authkey = Uri.encodeComponent(resp.data.authkey);
+          return "${info.baseWishUrl}win_mode=fullscreen&authkey_ver=1&sign_type=2&auth_appid=webview_gacha&init_type=301&gacha_id=b4ac24d133739b7b1d55173f30ccf980e0b73fc1&lang=zh-cn&device_type=mobile&game_version=CNRELiOS3.0.0_R10283122_S10446836_D10316937&plat_type=ios&game_biz=${role.gameBiz}&size=20&authkey=${authkey}&region=${role.region}&timestamp=1664481732&gacha_type=200&page=1&end_id=0";
+        }
+      }
     }
+    return null;
   }
 }

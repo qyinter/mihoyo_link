@@ -32,12 +32,14 @@ GameRoleInfo _$GameRoleInfoFromJson(Map<String, dynamic> json) => GameRoleInfo(
       list: (json['list'] as List<dynamic>)
           .map((e) => MihoyoGameRole.fromJson(e as Map<String, dynamic>))
           .toList(),
+      baseWishUrl: json['base_wish_url'] as String?,
     );
 
 Map<String, dynamic> _$GameRoleInfoToJson(GameRoleInfo instance) =>
     <String, dynamic>{
       'game_name': instance.gameName,
       'game_icon': instance.gameIcon,
+      'base_wish_url': instance.baseWishUrl,
       'list': instance.list,
     };
 
@@ -54,4 +56,18 @@ Map<String, dynamic> _$AuthKeyModelToJson(AuthKeyModel instance) =>
       'game_biz': instance.gameBiz,
       'game_uid': instance.gameUid,
       'region': instance.region,
+    };
+
+AuthKeyResult _$AuthKeyResultFromJson(Map<String, dynamic> json) =>
+    AuthKeyResult(
+      signType: (json['sign_type'] as num).toInt(),
+      authkeyVer: (json['authkey_ver'] as num).toInt(),
+      authkey: json['authkey'] as String,
+    );
+
+Map<String, dynamic> _$AuthKeyResultToJson(AuthKeyResult instance) =>
+    <String, dynamic>{
+      'sign_type': instance.signType,
+      'authkey_ver': instance.authkeyVer,
+      'authkey': instance.authkey,
     };

@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_qrcode.dart';
+import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/store/global.dart';
+import 'package:yuanmo_link/store/global_store.dart';
 
 class QRCodeWidget extends StatefulWidget {
   @override
@@ -17,7 +20,6 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
   bool isLoading = true;
   bool isScanned = false; // 新增变量，表示是否扫码成功
   bool infoStatus = false;
-  late String infoText = "";
 
   Timer? _pollingTimer;
   Timer? _timeoutTimer;
@@ -50,7 +52,14 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
       setState(() {
         isLoading = true;
         isScanned = false;
+        infoStatus = false;
       });
+      if (_pollingTimer != null) {
+        _pollingTimer?.cancel();
+      }
+      if (_timeoutTimer != null) {
+        _timeoutTimer?.cancel();
+      }
       final miHoYoUtils = MiHoYoUtils();
       final qrCodeResult = await miHoYoUtils.getGameLodinQrCode();
       if (qrCodeResult != null) {
@@ -85,10 +94,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
           timer.cancel();
           _pollingTimer?.cancel();
           _timeoutTimer?.cancel();
-
-          setState(() {
-            infoText = "扫码成功，正在获取信息中...";
-          });
+          BrnLoadingDialog.show(context, content: "获取数据中...");
 
           if (qrCodeStatus.payload.raw.isNotEmpty) {
             // String to QrCodeStatusRaw
@@ -97,6 +103,8 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
             Global.saveMiyousheAcount(qrCodeStatusRaw.uid);
             final mihoyoUserinfo = await miHoYoUtils.exchangeGameTokenForSToken(qrCodeStatusRaw);
             if (mihoyoUserinfo != null) {
+              Provider.of<GlobalChangeNotifier>(context, listen: false).saveUserInfo(mihoyoUserinfo.userInfo);
+
               Global.saveStoken(mihoyoUserinfo.token.token);
               Global.saveMid(mihoyoUserinfo.userInfo.mid);
               // 获取cookie
@@ -108,9 +116,11 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
               cookie += ";ltoken=$ltoken";
               Global.saveMihoyoCookie(cookie);
               // 获取角色信息
-              await miHoYoUtils.getGameRolesInfo(cookie);
+              List<GameRoleInfo> list = await miHoYoUtils.getGameRolesInfo(cookie);
+              Provider.of<GlobalChangeNotifier>(context, listen: false).saveGameRoleList(list);
               // 获取角色信息成功
               setState(() {
+                BrnLoadingDialog.dismiss(context);
                 BrnToast.show(
                   "全部信息已经获取成功",
                   context,
@@ -157,8 +167,6 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
                 color: Colors.green,
                 size: 100.0,
               )
-            else if (infoStatus) // 如果流程都显示当前进度
-              Text(infoText)
             else // 否则显示二维码
               QrImageView(
                 data: data,
@@ -170,6 +178,15 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
             Padding(
               padding: const EdgeInsets.only(top: 10.0), // 添加顶部内边距
               child: Text(isLoading ? "获取登录二维码中..." : "米游社扫码登录"),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0), // 添加顶部内边距
+              child: ElevatedButton(
+                onPressed: () {
+                  initData();
+                },
+                child: const Text('重新获取二维码'),
+              ),
             ),
           ],
         ),

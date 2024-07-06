@@ -29,20 +29,23 @@ class GameType {
   final String gameBiz;
   final String key;
   final String gameIcon;
+  final String baseWishUrl;
 
-  GameType(this.gameName, this.gameBiz, this.key, this.gameIcon);
+  GameType(this.gameName, this.gameBiz, this.key, this.gameIcon, this.baseWishUrl);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class GameRoleInfo {
   final String gameName;
   final String? gameIcon;
+  final String? baseWishUrl;
   final List<MihoyoGameRole> list;
 
   GameRoleInfo({
     required this.gameName,
     required this.gameIcon,
     required this.list,
+    required this.baseWishUrl,
   });
 
   factory GameRoleInfo.fromJson(Map<String, dynamic> json) => _$GameRoleInfoFromJson(json);
@@ -65,4 +68,20 @@ class AuthKeyModel {
 
   factory AuthKeyModel.fromJson(Map<String, dynamic> json) => _$AuthKeyModelFromJson(json);
   Map<String, dynamic> toJson() => _$AuthKeyModelToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class AuthKeyResult {
+  final int signType;
+  final int authkeyVer;
+  final String authkey;
+
+  AuthKeyResult({
+    required this.signType,
+    required this.authkeyVer,
+    required this.authkey,
+  });
+
+  factory AuthKeyResult.fromJson(Map<String, dynamic> json) => _$AuthKeyResultFromJson(json);
+  Map<String, dynamic> toJson() => _$AuthKeyResultToJson(this);
 }

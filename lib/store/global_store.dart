@@ -1,39 +1,21 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yuanmo_link/model/mihoyo_result.dart';
+import 'package:yuanmo_link/store/global.dart';
+import 'package:yuanmo_link/model/mihoyo_user_info.dart';
 
-class GlobalState with ChangeNotifier {
-  String _stoken = ''; // stoken
-  String _miyousheAcount = ''; // 米游社账号
+class GlobalChangeNotifier extends ChangeNotifier {
+  List<GameRoleInfo> get _gameRoleList => Global.gameRoleList;
+  UserInfo? get _userInfo => Global.userInfo; // 用户信息
 
-  String get stoken => _stoken;
-  String get miyousheAcount => _miyousheAcount;
-
-  GlobalState() {
-    _loadFromPrefs();
-  }
-
-  void _loadFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    _stoken = prefs.getString('stoken') ?? '';
-    _miyousheAcount = prefs.getString('miyousheAcount') ?? '';
+  saveGameRoleList(List<GameRoleInfo> list) {
+    Global.saveGameRoleList(list);
     notifyListeners();
   }
 
-  void setStoken(String stoken) {
-    _stoken = stoken;
-    _saveToPrefs();
+  saveUserInfo(UserInfo? userInfo) {
+    if (userInfo != null) {
+      Global.saveUserInfo(userInfo);
+    }
     notifyListeners();
-  }
-
-  void setMiyousheAcount(String miyousheAcount) {
-    _miyousheAcount = miyousheAcount;
-    _saveToPrefs();
-    notifyListeners();
-  }
-
-  void _saveToPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('stoken', _stoken);
-    prefs.setString('miyousheAcount', _miyousheAcount);
   }
 }
