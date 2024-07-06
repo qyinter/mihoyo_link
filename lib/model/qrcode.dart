@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'qrcode.g.dart';
 
-@JsonSerializable(genericArgumentFactories: true)
+@JsonSerializable()
 class QrcodeModel {
   final String appId;
   final String device;
@@ -11,17 +11,11 @@ class QrcodeModel {
 
   QrcodeModel({required this.appId, required this.device, required this.ticket, required this.payload});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'app_id': appId,
-      'device': device,
-      'ticket': ticket,
-      'payload': payload,
-    };
-  }
+  factory QrcodeModel.fromJson(Map<String, dynamic> json) => _$QrcodeModelFromJson(json);
+  Map<String, dynamic> toJson() => _$QrcodeModelToJson(this);
 }
 
-@JsonSerializable(genericArgumentFactories: true)
+@JsonSerializable()
 class QrCodeRespData {
   final String url;
 
@@ -29,23 +23,12 @@ class QrCodeRespData {
     required this.url,
   });
 
-  // fromJson 方法
-  factory QrCodeRespData.fromJson(Map<String, dynamic> json) {
-    return QrCodeRespData(
-      url: json['url'],
-    );
-  }
-
-  // toJson 方法
-  Map<String, dynamic> toJson() {
-    return {
-      'url': url,
-    };
-  }
+  factory QrCodeRespData.fromJson(Map<String, dynamic> json) => _$QrCodeRespDataFromJson(json);
+  Map<String, dynamic> toJson() => _$QrCodeRespDataToJson(this);
 }
 
 // QrCodeResult
-@JsonSerializable(genericArgumentFactories: true)
+@JsonSerializable()
 class QrCodeResult {
   final String url;
   final String ticket;
@@ -55,10 +38,13 @@ class QrCodeResult {
     required this.ticket,
     required this.uuid,
   });
+
+  factory QrCodeResult.fromJson(Map<String, dynamic> json) => _$QrCodeResultFromJson(json);
+  Map<String, dynamic> toJson() => _$QrCodeResultToJson(this);
 }
 
 // 获取轮训二维码返回的结果
-@JsonSerializable(genericArgumentFactories: true)
+@JsonSerializable()
 class QrCodeStatus {
   final String stat;
   final String realnameInfo;
@@ -70,23 +56,8 @@ class QrCodeStatus {
     required this.payload,
   });
 
-  // fromJson 方法
-  factory QrCodeStatus.fromJson(Map<String, dynamic> json) {
-    return QrCodeStatus(
-      stat: json['stat'] ?? '',
-      realnameInfo: json['realname_info'] ?? '',
-      payload: QrCodeStatusPayload.fromJson(json['payload'] ?? {}),
-    );
-  }
-
-  // toJson 方法
-  Map<String, dynamic> toJson() {
-    return {
-      'stat': stat,
-      'realname_info': realnameInfo,
-      'payload': payload.toJson(),
-    };
-  }
+  factory QrCodeStatus.fromJson(Map<String, dynamic> json) => _$QrCodeStatusFromJson(json);
+  Map<String, dynamic> toJson() => _$QrCodeStatusToJson(this);
 }
 
 @JsonSerializable(genericArgumentFactories: true)
@@ -101,26 +72,11 @@ class QrCodeStatusPayload {
     required this.ext,
   });
 
-  // fromJson 方法
-  factory QrCodeStatusPayload.fromJson(Map<String, dynamic> json) {
-    return QrCodeStatusPayload(
-      proto: json['proto'] ?? '',
-      raw: QrCodeStatusRaw.fromJson(json['raw'] ?? {}),
-      ext: json['ext'] ?? '',
-    );
-  }
-
-  // toJson 方法
-  Map<String, dynamic> toJson() {
-    return {
-      'proto': proto,
-      'raw': raw.toJson(),
-      'ext': ext,
-    };
-  }
+  factory QrCodeStatusPayload.fromJson(Map<String, dynamic> json) => _$QrCodeStatusPayloadFromJson(json);
+  Map<String, dynamic> toJson() => _$QrCodeStatusPayloadToJson(this);
 }
 
-@JsonSerializable(genericArgumentFactories: true)
+@JsonSerializable()
 class QrCodeStatusRaw {
   final String code;
   final String message;
@@ -130,19 +86,6 @@ class QrCodeStatusRaw {
     required this.message,
   });
 
-  // fromJson 方法
-  factory QrCodeStatusRaw.fromJson(Map<String, dynamic> json) {
-    return QrCodeStatusRaw(
-      code: json['code'] ?? '',
-      message: json['message'] ?? '',
-    );
-  }
-
-  // toJson 方法
-  Map<String, dynamic> toJson() {
-    return {
-      'code': code,
-      'message': message,
-    };
-  }
+  factory QrCodeStatusRaw.fromJson(Map<String, dynamic> json) => _$QrCodeStatusRawFromJson(json);
+  Map<String, dynamic> toJson() => _$QrCodeStatusRawToJson(this);
 }

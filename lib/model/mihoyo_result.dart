@@ -16,9 +16,9 @@ class MihoyoResult<T> {
 
   factory MihoyoResult.fromJson(
     Map<String, dynamic> json,
-    T Function(Object? json) fromJsonT,
+    T Function(dynamic json) fromJsonT,
   ) =>
-      _$MihoyoResultFromJson(json, fromJsonT);
+      _$MihoyoResultFromJson<T>(json, fromJsonT);
 
-  Map<String, dynamic> toJson(Object Function(T value) toJsonT) => _$MihoyoResultToJson(this, toJsonT);
+  Map<String, dynamic> toJson(Object? Function(T value) toJsonT) => _$MihoyoResultToJson<T>(this, toJsonT);
 }

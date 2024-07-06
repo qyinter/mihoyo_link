@@ -42,8 +42,8 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
         setState(() {
           data = qrCodeResult.url;
           isLoading = false;
-          // startPolling(qrCodeResult);
-          // startTimeout();
+          startPolling(qrCodeResult);
+          startTimeout();
         });
       } else {
         setState(() {
@@ -62,7 +62,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
   void startPolling(QrCodeResult qrCodeResp) {
     _pollingTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
       final miHoYoUtils = MiHoYoUtils();
-      final scanStatus = await miHoYoUtils.checkScanStatus(qrCodeResp); // 假设有一个方法检查扫码状态
+      final scanStatus = await miHoYoUtils.checkScanStatus(qrCodeResp);
       if (scanStatus != null && scanStatus == "1") {
         setState(() {
           isScanned = true;

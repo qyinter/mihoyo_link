@@ -39,7 +39,7 @@ class MiHoYoUtils {
       if (response.statusCode == 200) {
         final MihoyoResult<QrCodeRespData> resp = MihoyoResult<QrCodeRespData>.fromJson(
           response.data,
-          (json) => QrCodeRespData.fromJson(json as Map<String, dynamic>),
+          (json) => QrCodeRespData.fromJson(json),
         );
         if (resp.retcode == 0) {
           final regex = RegExp(r'ticket=([^&]*)');
@@ -61,7 +61,6 @@ class MiHoYoUtils {
   Future<String?> checkScanStatus(QrCodeResult qrcode) async {
     final QrcodeModel qrcodeModel = QrcodeModel(appId: "4", device: qrcode.uuid, ticket: qrcode.ticket, payload: "");
     print(qrcodeModel.toJson());
-
     final Response scanStatus = await _dio.post(
       "https://hk4e-sdk.mihoyo.com/hk4e_cn/combo/panda/qrcode/query",
       data: qrcodeModel.toJson(),
@@ -69,11 +68,10 @@ class MiHoYoUtils {
         headers: {"Content-Type": "application/json;charset=utf-8"},
       ),
     );
-
     if (scanStatus.statusCode == 200) {
       final MihoyoResult<QrCodeStatus> resp = MihoyoResult<QrCodeStatus>.fromJson(
         scanStatus.data,
-        (json) => QrCodeStatus.fromJson(json as Map<String, dynamic>),
+        (json) => QrCodeStatus.fromJson(json),
       );
       if (resp.retcode == 0) {
         print(resp.data.stat);
