@@ -73,6 +73,7 @@ flutter:
   uses-material-design: true
   assets:
       - assets/images/icon_toast_success.png
+      - assets/images/icon_toast_fail.png
       - assets/images/hk4e_cn.png
       - assets/images/bh3_cn.png
       - assets/images/hkrpg_cn.png

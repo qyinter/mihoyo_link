@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
@@ -372,34 +373,35 @@ CgGs52bFoYMtyi+xEQIDAQAB
   /// 验证码登录
   Future<MihoyoUserInfo?> loginByPhone(String phone, String code) async {
     final uuid = const Uuid().v4();
+
+    final body = {
+      "mobile": rsaEncrypt(phone),
+      "captcha": code,
+      "area_code": rsaEncrypt("+86"),
+      "action_type": "login_by_mobile_captcha"
+    };
+
     final Response result = await _dio.post(
       "https://passport-api.mihoyo.com/account/ma-cn-passport/app/loginByMobileCaptcha",
-      data: {
-        "mobile":
-            "ZmHkbj2A1A90CWWlDBo3TTpEAi5OfQ+SDcr8d0+jWISFmyGDABT0KvEDAG+REUARQX031HqoJfasEiLGxkoEmO6EGzvsT+N1GzEpAj9OokJbUuEbgfBT10ktMSunP0ibyMewKFovmw5OJmUlIGZWbqUhnQnSSuJ+F46iy4ooXSg=",
-        "captcha": "398016",
-        "area_code":
-            "DoBUhSO3bUuyh3pppYQ2CBj7oPmPxiAxb069mrHeZ4f9MA65yKb2QNBcLao7v7jAv9nbPhjyKakICnxsl9vC6EaR4BuiuhX+QUj1E1QV7hJUXocd\\/m5QQtUG+Kf8K8UvpMLxcgGKvfe1COvwCtnA++b\\/kAXTIalSuagf3WvBz04=",
-        "action_type": "login_by_mobile_captcha"
-      },
+      data: body,
       options: Options(
         headers: {
-          'User-Agent': 'okhttp/4.8.0',
-          'Host': 'api-takumi.mihoyo.com',
-          "Content-Type": "application/json;charset=utf-8",
-          "x-rpc-client_type": "1",
-          "x-rpc-app_version": "2.71.1",
-          "x-rpc-device_fp": uuid,
-          "x-rpc-device_id": uuid,
-          "x-rpc-app_id": "bll8iq97cem8",
-          "x-rpc-game_biz": "bbs_cn",
+          "Host": "passport-api.mihoyo.com",
+          "Content-Type": "application/json",
+          "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
           "x-rpc-account_version": "2.20.1",
-          "DS": getDs()
+          "x-rpc-app_id": "bll8iq97cem8",
+          "x-rpc-device_fp": "38d7eba84f1fa",
+          "x-rpc-app_version": "2.71.1",
+          "DS": getDs(),
+          "x-rpc-client_type": "1",
+          "x-rpc-device_id": uuid,
+          "x-rpc-sdk_version": "2.20.1",
+          "x-rpc-sys_version": "17.5.1",
+          "x-rpc-game_biz": "bbs_cn"
         },
       ),
     );
-
-    print(result.data);
     if (result.statusCode == 200) {
       final MihoyoResult<MihoyoUserInfo> resp = MihoyoResult<MihoyoUserInfo>.fromJson(
         result.data,
