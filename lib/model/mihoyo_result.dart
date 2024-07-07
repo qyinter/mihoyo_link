@@ -7,12 +7,12 @@ part 'mihoyo_result.g.dart';
 class MihoyoResult<T> {
   final int retcode;
   final String message;
-  final T data;
+  final T? data;
 
   MihoyoResult({
     required this.retcode,
     required this.message,
-    required this.data,
+    this.data,
   });
 
   factory MihoyoResult.fromJson(

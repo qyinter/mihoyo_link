@@ -104,7 +104,6 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
             final mihoyoUserinfo = await miHoYoUtils.exchangeGameTokenForSToken(qrCodeStatusRaw);
             if (mihoyoUserinfo != null) {
               Provider.of<GlobalChangeNotifier>(context, listen: false).saveUserInfo(mihoyoUserinfo.userInfo);
-
               Global.saveStoken(mihoyoUserinfo.token.token);
               Global.saveMid(mihoyoUserinfo.userInfo.mid);
               // 获取cookie

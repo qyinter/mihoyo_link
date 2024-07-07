@@ -28,7 +28,6 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
   final List<BadgeTab> _tabs = [
     BadgeTab(text: "扫码登录"),
     BadgeTab(text: "手机号登录"),
-    BadgeTab(text: "账号密码登录"),
   ];
 
   @override
@@ -191,7 +190,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
       case 1:
         return Password();
       default:
-        return Center(child: Text('未知组件', style: TextStyle(fontSize: 24)));
+        return Container();
     }
   }
 }

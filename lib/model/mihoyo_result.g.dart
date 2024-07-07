@@ -13,7 +13,7 @@ MihoyoResult<T> _$MihoyoResultFromJson<T>(
     MihoyoResult<T>(
       retcode: (json['retcode'] as num).toInt(),
       message: json['message'] as String,
-      data: fromJsonT(json['data']),
+      data: _$nullableGenericFromJson(json['data'], fromJsonT),
     );
 
 Map<String, dynamic> _$MihoyoResultToJson<T>(
@@ -23,8 +23,20 @@ Map<String, dynamic> _$MihoyoResultToJson<T>(
     <String, dynamic>{
       'retcode': instance.retcode,
       'message': instance.message,
-      'data': toJsonT(instance.data),
+      'data': _$nullableGenericToJson(instance.data, toJsonT),
     };
+
+T? _$nullableGenericFromJson<T>(
+  Object? input,
+  T Function(Object? json) fromJson,
+) =>
+    input == null ? null : fromJson(input);
+
+Object? _$nullableGenericToJson<T>(
+  T? input,
+  Object? Function(T value) toJson,
+) =>
+    input == null ? null : toJson(input);
 
 GameRoleInfo _$GameRoleInfoFromJson(Map<String, dynamic> json) => GameRoleInfo(
       gameName: json['game_name'] as String,
