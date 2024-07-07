@@ -159,6 +159,21 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                     final miHoYoUtils = MiHoYoUtils();
                                     BrnLoadingDialog.show(context);
                                     final wishUrl = await miHoYoUtils.getAuthkey(gameRole, role);
+
+                                    if (wishUrl == null) {
+                                      BrnToast.show(
+                                        "获取抽卡链接失败,如果多次获取失败请重新登录",
+                                        context,
+                                        preIcon: Image.asset(
+                                          "assets/images/icon_toast_fail.png",
+                                          width: 24,
+                                          height: 24,
+                                        ),
+                                        duration: const Duration(seconds: 2),
+                                      );
+                                      return;
+                                    }
+
                                     BrnLoadingDialog.dismiss(context);
                                     BrnDialogManager.showConfirmDialog(context,
                                         title: "抽卡链接获取成功:$wishUrl", cancel: '取消', confirm: '复制链接', onConfirm: () {

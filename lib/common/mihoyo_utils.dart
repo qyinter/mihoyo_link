@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
@@ -9,6 +8,7 @@ import 'package:pointycastle/pointycastle.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/model/mihoyo_game_role.dart';
 import 'package:yuanmo_link/model/mihoyo_login.dart';
+import 'package:yuanmo_link/model/mihoyo_mmt.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/model/mihoyo_token.dart';
 import 'package:yuanmo_link/model/mihoyo_user_info.dart';
@@ -275,6 +275,9 @@ CgGs52bFoYMtyi+xEQIDAQAB
         // 取出cookie
         if (resp.data!.authkey.isNotEmpty) {
           final authkey = Uri.encodeComponent(resp.data!.authkey);
+
+          /// 服务器redis 存储 这个url
+
           return "${info.baseWishUrl}win_mode=fullscreen&authkey_ver=1&sign_type=2&auth_appid=webview_gacha&init_type=301&gacha_id=b4ac24d133739b7b1d55173f30ccf980e0b73fc1&lang=zh-cn&device_type=mobile&game_version=CNRELiOS3.0.0_R10283122_S10446836_D10316937&plat_type=ios&game_biz=${role.gameBiz}&size=20&authkey=${authkey}&region=${role.region}&timestamp=1664481732&gacha_type=200&page=1&end_id=0";
         }
       }
@@ -308,7 +311,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
     return null;
   }
 
-  /// 发送验证码
+  /// 发送验证码 网页
   Future<String?> sendPhoneCode(SendPhoneModel resultForm) async {
     final url =
         "https://webapi.account.mihoyo.com/Api/create_mobile_captcha?action_type=${resultForm.actionType}&mmt_key=${resultForm.mmtKey}&geetest_challenge=${resultForm.geetestChallenge}&geetest_validate=${resultForm.geetestValidate}&geetest_seccode=${resultForm.geetestSeccode}&mobile=${resultForm.mobile}&t=${resultForm.t}";
@@ -337,53 +340,125 @@ CgGs52bFoYMtyi+xEQIDAQAB
     return "发送失败, 请稍后重试";
   }
 
-  /// 账号密码登录
-  Future<MihoyoUserInfo?> loginByPassword(String account, String password) async {
+  /// 发送验证码 客户端
+  Future<MmtResult?> sendPhoneByMiyoushe(String phone, String? rpcAigis) async {
     final uuid = const Uuid().v4();
+    final headers = {
+      "Host": "passport-api.mihoyo.com",
+      "Content-Type": "application/json",
+      "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
+      "x-rpc-account_version": "2.20.1",
+      "x-rpc-app_id": "bll8iq97cem8",
+      "x-rpc-device_fp": "38d7eba84f1fa",
+      "x-rpc-app_version": "2.71.1",
+      "DS": getDs(),
+      "x-rpc-client_type": "1",
+      "x-rpc-device_id": uuid,
+      "x-rpc-sdk_version": "2.20.1",
+      "x-rpc-sys_version": "17.5.1",
+      "x-rpc-game_biz": "bbs_cn"
+    };
+
+    if (rpcAigis != null) {
+      headers["X-Rpc-Aigis"] = rpcAigis;
+    }
+
+    final Response result = await _dio.post(
+      "https://passport-api.miyoushe.com/account/ma-cn-verifier/verifier/createLoginCaptcha",
+      data: {"mobile": rsaEncrypt(phone), "area_code": rsaEncrypt("+86")},
+      options: Options(
+        headers: headers,
+      ),
+    );
+    MmtResult map = MmtResult(isOk: false, message: "", mmtModel: null, userInfo: null);
+    if (result.statusCode == 200) {
+      final MihoyoResult<CaptchaSendData> resp = MihoyoResult<CaptchaSendData>.fromJson(
+        result.data,
+        (json) => CaptchaSendData.fromJson(json),
+      );
+
+      if (resp.retcode == 0) {
+        map.isOk = true;
+        map.message = "发送成功";
+      } else {
+        map.isOk = false;
+        map.message = resp.message;
+        final aigis = result.headers.value("X-Rpc-Aigis");
+        if (aigis != null) {
+          final mainModel = MmtMainModel.fromJson(jsonDecode(aigis));
+          map.mmtModel = mainModel;
+        }
+      }
+    }
+    return map;
+  }
+
+  /// 账号密码登录
+  Future<MmtResult?> loginByPassword(String account, String password, String? rpcAigis) async {
+    final uuid = const Uuid().v4();
+    final headers = {
+      "Host": "passport-api.mihoyo.com",
+      "Content-Type": "application/json",
+      "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
+      "x-rpc-account_version": "2.20.1",
+      "x-rpc-app_id": "bll8iq97cem8",
+      "x-rpc-device_fp": "38d7eba84f1fa",
+      "x-rpc-app_version": "2.71.1",
+      "DS": getDs(),
+      "x-rpc-client_type": "1",
+      "x-rpc-device_id": uuid,
+      "x-rpc-sdk_version": "2.20.1",
+      "x-rpc-sys_version": "17.5.1",
+      "x-rpc-game_biz": "bbs_cn"
+    };
+
+    if (rpcAigis != null) {
+      headers["X-Rpc-Aigis"] = rpcAigis;
+    }
+
     final Response result = await _dio.post(
       "https://passport-api.mihoyo.com/account/ma-cn-passport/app/loginByPassword",
       data: {"account": rsaEncrypt(account), "password": rsaEncrypt(password)},
       options: Options(
-        headers: {
-          'User-Agent': 'okhttp/4.8.0',
-          "Content-Type": "application/json;charset=utf-8",
-          "x-rpc-app_id": "bll8iq97cem8",
-          "x-rpc-client_type": "2",
-          "x-rpc-game_biz": "bbs_cn",
-          "x-rpc-device_fp": uuid,
-          "x-rpc-device_id": uuid
-        },
+        headers: headers,
       ),
     );
+
+    MmtResult map = MmtResult(isOk: false, message: "", mmtModel: null, userInfo: null);
     if (result.statusCode == 200) {
       final MihoyoResult<MihoyoUserInfo> resp = MihoyoResult<MihoyoUserInfo>.fromJson(
         result.data,
         (json) => MihoyoUserInfo.fromJson(json),
       );
       if (resp.retcode == 0) {
-        return resp.data;
+        map.userInfo = resp.data;
+        map.isOk = true;
       } else {
-        throw Exception("Failed to check scan status: ${resp.message}");
+        map.isOk = false;
+        map.message = resp.message;
+        final aigis = result.headers.value("X-Rpc-Aigis");
+        if (aigis != null) {
+          final mainModel = MmtMainModel.fromJson(jsonDecode(aigis));
+          map.mmtModel = mainModel;
+        }
       }
     } else {
       throw Exception("Failed to check scan status");
     }
+    return map;
   }
 
   /// 验证码登录
   Future<MihoyoUserInfo?> loginByPhone(String phone, String code) async {
     final uuid = const Uuid().v4();
-
-    final body = {
-      "mobile": rsaEncrypt(phone),
-      "captcha": code,
-      "area_code": rsaEncrypt("+86"),
-      "action_type": "login_by_mobile_captcha"
-    };
-
     final Response result = await _dio.post(
       "https://passport-api.mihoyo.com/account/ma-cn-passport/app/loginByMobileCaptcha",
-      data: body,
+      data: {
+        "mobile": rsaEncrypt(phone),
+        "captcha": code,
+        "area_code": rsaEncrypt("+86"),
+        "action_type": "login_by_mobile_captcha"
+      },
       options: Options(
         headers: {
           "Host": "passport-api.mihoyo.com",

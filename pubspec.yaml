@@ -43,10 +43,8 @@ dependencies:
   crypto: ^3.0.1
   encrypt: ^5.0.0
   pointycastle: ^3.4.1
-  gt3_flutter_plugin:
-    git:
-      url: https://github.com/GeeTeam/gt3_flutter_plugin.git
-      ref: main
+  gt3_flutter_plugin: ^0.1.0
+  gt4_flutter_plugin: ^0.1.1
   
 dev_dependencies:
   flutter_test:

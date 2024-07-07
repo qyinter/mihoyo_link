@@ -315,12 +315,19 @@ packages:
   gt3_flutter_plugin:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: fbc42457fb07cac4b45710a0681e1d046be9efb1
-      url: "https://github.com/GeeTeam/gt3_flutter_plugin.git"
-    source: git
+      name: gt3_flutter_plugin
+      sha256: "08f35692e937770ad6b3e2017eb8ef81839a82b8a63f5acf3abab14b688fc36c"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.0"
+  gt4_flutter_plugin:
+    dependency: "direct main"
+    description:
+      name: gt4_flutter_plugin
+      sha256: ee728eae4544f321448f27636cd41f256ab3c19f9efff486faea3e6987741fa7
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   http_multi_server:
     dependency: transitive
     description:

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
@@ -32,6 +33,7 @@ class Global {
 
   //初始化全局信息，会在APP启动时执行
   static Future init() async {
+    BrnInitializer.register();
     WidgetsFlutterBinding.ensureInitialized();
 
     _prefs = await SharedPreferences.getInstance();
