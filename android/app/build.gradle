@@ -46,13 +46,16 @@ android {
 
     signingConfigs {
         release {
-            if (project.hasProperty('keyProperties')) {
-                def keystoreProperties = new Properties()
-                keystoreProperties.load(new FileInputStream(rootProject.file('key.properties')))
+            def keystoreProperties = new Properties()
+            def keystoreFile = rootProject.file('key.properties')
+            if (keystoreFile.exists()) {
+                keystoreProperties.load(new FileInputStream(keystoreFile))
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
                 storeFile file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
+            } else {
+                println 'Keystore file not found: ' + keystoreFile
             }
         }
     }
@@ -63,8 +66,8 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             // signingConfig = signingConfigs.debug
             signingConfig signingConfigs.release
-            minifyEnabled false // 由 R8 替换 proguard
-            shrinkResources false
+            minifyEnabled true // 启用代码压缩和混淆
+            shrinkResources true // 启用资源压缩
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

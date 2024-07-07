@@ -181,7 +181,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                         title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!",
                                         cancel: '取消',
                                         confirm: '复制密钥', onConfirm: () {
-                                      Clipboard.setData(ClipboardData(text: wishUrl ?? ''));
+                                      Clipboard.setData(ClipboardData(text: wishUrl));
                                       Navigator.pop(context);
                                     }, onCancel: () {
                                       Navigator.pop(context);
