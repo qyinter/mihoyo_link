@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yuanmo_link/common/api_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_game_role.dart';
 import 'package:yuanmo_link/model/mihoyo_login.dart';
 import 'package:yuanmo_link/model/mihoyo_mmt.dart';
@@ -277,8 +278,10 @@ CgGs52bFoYMtyi+xEQIDAQAB
           final authkey = Uri.encodeComponent(resp.data!.authkey);
 
           /// 服务器redis 存储 这个url
-
-          return "${info.baseWishUrl}win_mode=fullscreen&authkey_ver=1&sign_type=2&auth_appid=webview_gacha&init_type=301&gacha_id=b4ac24d133739b7b1d55173f30ccf980e0b73fc1&lang=zh-cn&device_type=mobile&game_version=CNRELiOS3.0.0_R10283122_S10446836_D10316937&plat_type=ios&game_biz=${role.gameBiz}&size=20&authkey=${authkey}&region=${role.region}&timestamp=1664481732&gacha_type=200&page=1&end_id=0";
+          final streo = ApiUtils();
+          final key = streo.setWishUrl(
+              "${info.baseWishUrl}win_mode=fullscreen&authkey_ver=1&sign_type=2&auth_appid=webview_gacha&init_type=301&gacha_id=b4ac24d133739b7b1d55173f30ccf980e0b73fc1&lang=zh-cn&device_type=mobile&game_version=CNRELiOS3.0.0_R10283122_S10446836_D10316937&plat_type=ios&game_biz=${role.gameBiz}&size=20&authkey=${authkey}&region=${role.region}&timestamp=1664481732&gacha_type=200&page=1&end_id=0");
+          return key;
         }
       }
     }

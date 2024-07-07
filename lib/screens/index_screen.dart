@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bruno/bruno.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/components/password.dart';
@@ -175,8 +176,11 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                     }
 
                                     BrnLoadingDialog.dismiss(context);
+                                    String? APP_NAME = dotenv.env['APP_NAME'];
                                     BrnDialogManager.showConfirmDialog(context,
-                                        title: "抽卡链接获取成功:$wishUrl", cancel: '取消', confirm: '复制链接', onConfirm: () {
+                                        title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!",
+                                        cancel: '取消',
+                                        confirm: '复制密钥', onConfirm: () {
                                       Clipboard.setData(ClipboardData(text: wishUrl ?? ''));
                                       Navigator.pop(context);
                                     }, onCancel: () {

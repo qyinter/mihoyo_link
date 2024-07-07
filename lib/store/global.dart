@@ -11,9 +11,9 @@ class Global {
 
   static final List<GameType> GameList = [
     GameType("原神", "hk4e_cn", "genshin", "assets/images/hk4e_cn.png",
-        "https://public-operation-nap.mihoyo.com/common/gacha_record/api/getGachaLog?"),
-    GameType("绝区零", "nap_cn", "zzz", "assets/images/nap_cn.png",
         "https://public-operation-hk4e.mihoyo.com/gacha_info/api/getGachaLog?"),
+    GameType("绝区零", "nap_cn", "zzz", "assets/images/nap_cn.png",
+        "https://public-operation-nap.mihoyo.com/common/gacha_record/api/getGachaLog?"),
     // GameType("崩坏：星穹铁道", "hkrpg_cn", "startrain", "assets/images/hkrpg_cn.png"),
     // GameType("崩坏3", "bh3_cn", "honkai3", "assets/images/bh3_cn.png"),
   ];

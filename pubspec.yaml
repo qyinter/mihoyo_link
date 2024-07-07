@@ -45,6 +45,7 @@ dependencies:
   pointycastle: ^3.4.1
   gt3_flutter_plugin: ^0.1.0
   gt4_flutter_plugin: ^0.1.1
+  flutter_dotenv: ^5.0.2  # 添加 flutter_dotenv 依赖
   
 dev_dependencies:
   flutter_test:
@@ -77,6 +78,8 @@ flutter:
       - assets/images/hkrpg_cn.png
       - assets/images/nap_cn.png
       - assets/images/logo.png
+      - .env.dev
+      - .env.prod
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

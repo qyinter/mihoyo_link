@@ -78,7 +78,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
   }
 
   void startPolling(QrCodeResult qrCodeResp) {
-    _pollingTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
+    _pollingTimer = Timer.periodic(Duration(seconds: 2), (timer) async {
       final miHoYoUtils = MiHoYoUtils();
       final qrCodeStatus = await miHoYoUtils.checkScanStatus(qrCodeResp);
       if (qrCodeStatus != null) {
