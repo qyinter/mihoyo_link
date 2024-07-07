@@ -67,17 +67,6 @@ class ApiUtils {
     if (result.statusCode == 200) {
       final ApiResult apiResult = ApiResult.fromJson(result.data);
       if (apiResult.code == 200) {
-        final Response result2 = await _dio.get(
-          "$apiUrl/api/wish_url/${apiResult.data}",
-          options: Options(
-            headers: {
-              "content-type": "application/json",
-              'x-pre-signature': getSignature('wx9b4faf458899421f'),
-              'x-pre-app': APP_SING
-            },
-          ),
-        );
-        print(result2);
         return apiResult.data;
       } else {
         return null;

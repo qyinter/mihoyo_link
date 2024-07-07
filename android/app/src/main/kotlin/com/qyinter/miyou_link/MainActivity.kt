@@ -1,4 +1,4 @@
-package com.example.yuanmo_link
+package com.qyinter.miyou_link
 
 import io.flutter.embedding.android.FlutterActivity
 
