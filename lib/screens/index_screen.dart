@@ -31,6 +31,8 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
     BadgeTab(text: "手机号登录"),
   ];
 
+  final String? appTitle = dotenv.env['APP_TITLE'];
+
   @override
   void initState() {
     super.initState();
@@ -76,7 +78,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('绳网小助手-米游Link'),
+          title: Text("$appTitle-米游Link"),
         ),
         body: Consumer<GlobalChangeNotifier>(builder: (context, notifier, child) {
           return Column(children: [
@@ -85,8 +87,8 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
               color: Colors.blue[100],
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    backgroundImage: AssetImage("assets/images/logo.png"),
+                  CircleAvatar(
+                    backgroundImage: getIcon(),
                     radius: 25,
                   ),
                   const SizedBox(width: 8),
@@ -211,5 +213,13 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
       default:
         return Container();
     }
+  }
+
+  AssetImage getIcon() {
+    final APP_ICON = dotenv.env['APP_ICON'];
+    if (APP_ICON == null) {
+      return AssetImage("assets/images/logo.png");
+    }
+    return AssetImage("assets/images$APP_ICON");
   }
 }

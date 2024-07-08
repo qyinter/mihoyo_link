@@ -83,6 +83,8 @@ flutter:
       - assets/images/hkrpg_cn.png
       - assets/images/nap_cn.png
       - assets/images/logo.png
+      - assets/images/gongfang.jpg
+      - assets/images/xiaozhuli.jpg
       - .env.dev
       - .env.prod
       # 小助理
