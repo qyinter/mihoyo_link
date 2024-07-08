@@ -64,6 +64,8 @@ class ApiUtils {
       ),
     );
 
+    print(result.data);
+
     if (result.statusCode == 200) {
       final ApiResult apiResult = ApiResult.fromJson(result.data);
       if (apiResult.code == 200) {
