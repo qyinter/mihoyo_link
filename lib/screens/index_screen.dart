@@ -3,6 +3,7 @@ import 'package:bruno/bruno.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/components/password.dart';
 import 'package:yuanmo_link/components/qr_code.dart';
@@ -178,16 +179,45 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                     }
 
                                     BrnLoadingDialog.dismiss(context);
-                                    String? APP_NAME = dotenv.env['APP_NAME'];
-                                    BrnDialogManager.showConfirmDialog(context,
-                                        title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!",
-                                        cancel: '取消',
-                                        confirm: '复制密钥', onConfirm: () {
-                                      Clipboard.setData(ClipboardData(text: wishUrl));
-                                      Navigator.pop(context);
-                                    }, onCancel: () {
-                                      Navigator.pop(context);
-                                    });
+
+                                    String? APP_NAME = "";
+
+                                    String? APP_ID = "";
+                                    String? JAPP_PATH = "";
+                                    if (role.gameName == "原神") {
+                                      APP_ID = dotenv.env['YUANSHEN_APP_ID'];
+                                      JAPP_PATH = dotenv.env['YUANSHEN_APP_PATH'];
+                                      APP_NAME = dotenv.env['APP_NAME2'];
+                                    } else {
+                                      APP_ID = dotenv.env['JUEQU_APP_ID'];
+                                      JAPP_PATH = dotenv.env['JUEQU_APP_PATH'];
+                                      APP_NAME = dotenv.env['APP_NAME'];
+                                    }
+
+                                    final String wechatUrl =
+                                        'weixin://dl/business/?appid=$APP_ID&path=$JAPP_PATH&query=key=$wishUrl&env_version=develop';
+                                    var uri = Uri.parse(wechatUrl);
+                                    // 尝试打开微信小程序深层链接
+                                    if (await canLaunchUrl(uri)) {
+                                      launchUrl(uri, mode: LaunchMode.externalApplication);
+                                    } else {
+                                      BrnDialogManager.showSingleButtonDialog(context,
+                                          title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!", label: '复制', onTap: () async {
+                                        // 复制到剪切板
+                                        Clipboard.setData(ClipboardData(text: wishUrl));
+                                        BrnToast.show(
+                                          "已复制到剪切板,快去$APP_NAME使用吧!",
+                                          context,
+                                          preIcon: Image.asset(
+                                            "assets/images/icon_toast_success.png",
+                                            width: 24,
+                                            height: 24,
+                                          ),
+                                          duration: const Duration(seconds: 2),
+                                        );
+                                        Navigator.pop(context);
+                                      });
+                                    }
                                   },
                                   child: const Text('获取抽卡链接'),
                                 ),

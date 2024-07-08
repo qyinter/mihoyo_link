@@ -46,6 +46,7 @@ dependencies:
   gt3_flutter_plugin: ^0.1.0
   gt4_flutter_plugin: ^0.1.1
   flutter_dotenv: ^5.0.2  # 添加 flutter_dotenv 依赖
+  url_launcher: ^6.0.20
   
 dev_dependencies:
   flutter_test:
