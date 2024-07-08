@@ -195,29 +195,28 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                     }
 
                                     final String wechatUrl =
-                                        'weixin://dl/business/?appid=$APP_ID&path=$JAPP_PATH&query=key=$wishUrl&env_version=develop';
+                                        'weixin://dl/business/?appid=$APP_ID&path=$JAPP_PATH&query=key=$wishUrl&env_version=release';
                                     var uri = Uri.parse(wechatUrl);
                                     // 尝试打开微信小程序深层链接
                                     if (await canLaunchUrl(uri)) {
                                       launchUrl(uri, mode: LaunchMode.externalApplication);
-                                    } else {
-                                      BrnDialogManager.showSingleButtonDialog(context,
-                                          title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!", label: '复制', onTap: () async {
-                                        // 复制到剪切板
-                                        Clipboard.setData(ClipboardData(text: wishUrl));
-                                        BrnToast.show(
-                                          "已复制到剪切板,快去$APP_NAME使用吧!",
-                                          context,
-                                          preIcon: Image.asset(
-                                            "assets/images/icon_toast_success.png",
-                                            width: 24,
-                                            height: 24,
-                                          ),
-                                          duration: const Duration(seconds: 2),
-                                        );
-                                        Navigator.pop(context);
-                                      });
                                     }
+                                    // 复制到剪切板
+                                    Clipboard.setData(ClipboardData(text: wishUrl));
+                                    BrnDialogManager.showSingleButtonDialog(context,
+                                        title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!", label: '复制', onTap: () async {
+                                      BrnToast.show(
+                                        "已复制到剪切板,快去$APP_NAME使用吧!",
+                                        context,
+                                        preIcon: Image.asset(
+                                          "assets/images/icon_toast_success.png",
+                                          width: 24,
+                                          height: 24,
+                                        ),
+                                        duration: const Duration(seconds: 2),
+                                      );
+                                      Navigator.pop(context);
+                                    });
                                   },
                                   child: const Text('获取抽卡链接'),
                                 ),
