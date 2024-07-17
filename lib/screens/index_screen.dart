@@ -28,7 +28,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
   late int selected = 0;
   // login picker tab
   final List<BadgeTab> _tabs = [
-    BadgeTab(text: "扫码登录"),
+    // BadgeTab(text: "扫码登录"),
     BadgeTab(text: "手机号登录"),
   ];
 
@@ -255,7 +255,8 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
   Widget selectedComponent(int selected) {
     switch (selected) {
       case 0:
-        return QRCodeWidget();
+        return Password();
+      // return QRCodeWidget();
       case 1:
         return Password();
       default:
