@@ -47,7 +47,9 @@ dependencies:
   gt4_flutter_plugin: ^0.1.1
   flutter_dotenv: ^5.0.2  # 添加 flutter_dotenv 依赖
   url_launcher: ^6.0.20
-  
+  device_info_plus: ^10.0.0
+  system_info2: ^4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

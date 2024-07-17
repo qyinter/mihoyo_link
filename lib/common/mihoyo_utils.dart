@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:pointycastle/pointycastle.dart';
+import 'package:system_info2/system_info2.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/api_utils.dart';
+import 'package:yuanmo_link/model/mihoyo_fp.dart';
 import 'package:yuanmo_link/model/mihoyo_game_role.dart';
 import 'package:yuanmo_link/model/mihoyo_login.dart';
 import 'package:yuanmo_link/model/mihoyo_mmt.dart';
@@ -83,6 +86,79 @@ CgGs52bFoYMtyi+xEQIDAQAB
 
     final encrypted = encrypter.encrypt(message);
     return base64.encode(encrypted.bytes);
+  }
+
+  //  fp
+  String generateCustomId() {
+    final random = Random();
+    const length = 13;
+    const prefix = '38';
+    const chars = '0123456789abcdef';
+
+    String randomString =
+        List.generate(length - prefix.length, (index) => chars[random.nextInt(chars.length)]).join('');
+
+    return '$prefix$randomString';
+  }
+
+  /// 获取游戏fp
+  Future<QrCodeResult?> getFp() async {
+    // 先获取手机信息
+    final deviceInfoPlugin = DeviceInfoPlugin();
+    final androidInfo = await deviceInfoPlugin.androidInfo;
+    var uuid = const Uuid().v4();
+    final devinfo = DeviceInfo(
+        cpuType: SysInfo.kernelName,
+        romCapacity: '512', // Placeholder value, 获取 ROM 总容量需要不同的方法
+        productName: androidInfo.product,
+        romRemain: '459', // Placeholder value, 获取 ROM 剩余容量需要不同的方法
+        manufacturer: androidInfo.manufacturer,
+        appMemory: '512', // Placeholder value, 获取应用内存使用情况需要不同的方法
+        hostname: SysInfo.kernelArchitecture.toString(),
+        screenSize: '1440x3022', // Placeholder value, 获取屏幕尺寸需要不同的方法
+        osVersion: androidInfo.version.release,
+        aaid: uuid, // Placeholder value, 获取 AAID 需要不同的方法
+        vendor: '中国联通', // Placeholder value
+        accelerometer: '0.061016977x0.8362915x9.826724', // Placeholder value
+        buildTags: androidInfo.tags,
+        model: androidInfo.model,
+        brand: androidInfo.brand,
+        oaid: '67b292338ad57a24', // Placeholder value
+        hardware: androidInfo.hardware,
+        deviceType: androidInfo.device,
+        devId: androidInfo.id,
+        serialNumber: androidInfo.serialNumber,
+        buildTime: androidInfo.version.incremental,
+        buildUser: 'builder', // Placeholder value
+        ramCapacity: "229481",
+        magnetometer: '80.64375x-14.1x77.90625', // Placeholder value
+        display: 'TKQ1.221114.001 release-keys', // Placeholder value
+        ramRemain: "110308",
+        deviceInfo: 'Xiaomi/ishtar/ishtar:13/TKQ1.221114.001/V14.0.17.0.TMACNXM:user/release-keys', // Placeholder value
+        gyroscope: '7.9894776E-4x-1.3315796E-4x6.6578976E-4', // Placeholder value
+        vaid: '4c10d338150078d8', // Placeholder value
+        buildType: androidInfo.type,
+        sdkVersion: androidInfo.version.sdkInt.toString(),
+        board: androidInfo.board);
+    // 在获取fp
+    var uuid2 = const Uuid().v4();
+    final fpbody = FpBody(
+        device_id: "2d356b22f39b708c",
+        seed_id: uuid2,
+        seed_time: DateTime.now().millisecondsSinceEpoch.toString(),
+        platform: "2",
+        device_fp: generateCustomId(),
+        app_name: "bbs_cn",
+        ext_fields: devinfo.toJson().toString());
+
+    print(fpbody.toJson());
+    Response response = await _dio.post(
+      "$mihoyoSdkBaseUrl$mihoyoLoginQrCodePath",
+      data: fpbody.toJson(),
+    );
+    if (response.statusCode == 200) {
+      print(response.data);
+    }
   }
 
   /// 获取游戏登录二维码
@@ -353,7 +429,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
       "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
       "x-rpc-account_version": "2.20.1",
       "x-rpc-app_id": "bll8iq97cem8",
-      "x-rpc-device_fp": "38d7eba84f1fa",
+      "x-rpc-device_fp": generateCustomId(),
       "x-rpc-app_version": "2.71.1",
       "DS": getDs(),
       "x-rpc-client_type": "1",
@@ -406,7 +482,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
       "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
       "x-rpc-account_version": "2.20.1",
       "x-rpc-app_id": "bll8iq97cem8",
-      "x-rpc-device_fp": "38d7eba84f1fa",
+      "x-rpc-device_fp": generateCustomId(),
       "x-rpc-app_version": "2.71.1",
       "DS": getDs(),
       "x-rpc-client_type": "1",
@@ -470,7 +546,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
           "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
           "x-rpc-account_version": "2.20.1",
           "x-rpc-app_id": "bll8iq97cem8",
-          "x-rpc-device_fp": "38d7eba84f1fa",
+          "x-rpc-device_fp": generateCustomId(),
           "x-rpc-app_version": "2.71.1",
           "DS": getDs(),
           "x-rpc-client_type": "1",

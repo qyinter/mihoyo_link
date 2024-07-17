@@ -263,6 +263,17 @@ class _PasswordState extends State<Password> {
                             },
                           );
                         }
+                      } else {
+                        BrnToast.show(
+                          "验证码发送成功",
+                          context,
+                          preIcon: Image.asset(
+                            "assets/images/icon_toast_success.png",
+                            width: 24,
+                            height: 24,
+                          ),
+                          duration: const Duration(seconds: 2),
+                        );
                       }
                     },
                     child: const Text(

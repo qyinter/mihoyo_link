@@ -194,6 +194,25 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                       APP_NAME = dotenv.env['APP_NAME'];
                                     }
 
+                                    if (APP_ID == null || APP_ID == "") {
+                                      // 复制到剪切板
+                                      Clipboard.setData(ClipboardData(text: wishUrl));
+                                      BrnDialogManager.showSingleButtonDialog(context,
+                                          title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!", label: '复制', onTap: () async {
+                                        BrnToast.show(
+                                          "已复制到剪切板,快去$APP_NAME使用吧!",
+                                          context,
+                                          preIcon: Image.asset(
+                                            "assets/images/icon_toast_success.png",
+                                            width: 24,
+                                            height: 24,
+                                          ),
+                                          duration: const Duration(seconds: 2),
+                                        );
+                                        Navigator.pop(context);
+                                      });
+                                      return;
+                                    }
                                     final String wechatUrl =
                                         'weixin://dl/business/?appid=$APP_ID&path=$JAPP_PATH&query=key=$wishUrl&env_version=release';
                                     var uri = Uri.parse(wechatUrl);

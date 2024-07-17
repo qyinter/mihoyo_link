@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/model/mihoyo_user_info.dart';
 
@@ -25,6 +26,7 @@ class Global {
   static String miyousheAcount = ""; // 米游社账号
   static String mid = ""; //  mihoyo id
   static String mihoyoCookie = ""; // 米哈游cookie
+  static String userFp = ""; // 用户设备信息
 
   static UserInfo? userInfo; // 用户信息
 
