@@ -47,6 +47,8 @@ dependencies:
   gt4_flutter_plugin: ^0.1.1
   flutter_dotenv: ^5.0.2  # 添加 flutter_dotenv 依赖
   url_launcher: ^6.0.20
+  webview_flutter: ^4.8.0 
+  device_info_plus: ^10.1.0
 
 dev_dependencies:
   flutter_test:
@@ -90,8 +92,6 @@ flutter:
       - .env.prod
       # 小助理
       - .env.zl 
-      # 小助手
-      - .env.zs
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

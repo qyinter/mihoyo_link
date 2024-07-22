@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
@@ -63,6 +64,9 @@ class Global {
     if (userInfo_ != null) {
       userInfo = UserInfo.fromJson(jsonDecode(userInfo_));
     }
+
+    final utils = MiHoYoUtils();
+    utils.getAndroidFp();
   }
 
   // 持久化Profile信息

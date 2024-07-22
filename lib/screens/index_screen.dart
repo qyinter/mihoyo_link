@@ -39,7 +39,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
     super.initState();
     // 在构建完成后调用 Bottom Picker
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showLoginPicker();
+      if (Global.userInfo == null) _showLoginPicker();
     });
     _tabController = TabController(length: _tabs.length, vsync: this);
   }
@@ -157,88 +157,121 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                     Text("${gameRole.regionName} - Lv.${gameRole.level}"),
                                   ],
                                 ),
-                                OutlinedButton(
-                                  onPressed: () async {
-                                    // Handle button press
-                                    final miHoYoUtils = MiHoYoUtils();
-                                    BrnLoadingDialog.show(context);
-                                    final wishUrl = await miHoYoUtils.getAuthkey(gameRole, role);
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    OutlinedButton(
+                                      onPressed: () async {
+                                        // Handle button press
+                                        final miHoYoUtils = MiHoYoUtils();
+                                        BrnLoadingDialog.show(context);
+                                        final wishUrl = await miHoYoUtils.getAuthkey(gameRole, role);
 
-                                    if (wishUrl == null) {
-                                      BrnToast.show(
-                                        "获取抽卡链接失败,如果多次获取失败请重新登录",
-                                        context,
-                                        preIcon: Image.asset(
-                                          "assets/images/icon_toast_fail.png",
-                                          width: 24,
-                                          height: 24,
-                                        ),
-                                        duration: const Duration(seconds: 2),
-                                      );
-                                      return;
-                                    }
+                                        if (wishUrl == null) {
+                                          BrnToast.show(
+                                            "获取抽卡链接失败,如果多次获取失败请重新登录",
+                                            context,
+                                            preIcon: Image.asset(
+                                              "assets/images/icon_toast_fail.png",
+                                              width: 24,
+                                              height: 24,
+                                            ),
+                                            duration: const Duration(seconds: 2),
+                                          );
+                                          return;
+                                        }
 
-                                    BrnLoadingDialog.dismiss(context);
+                                        BrnLoadingDialog.dismiss(context);
 
-                                    String? APP_NAME = "";
+                                        String? APP_NAME = "";
 
-                                    String? APP_ID = "";
-                                    String? JAPP_PATH = "";
-                                    if (role.gameName == "原神") {
-                                      APP_ID = dotenv.env['YUANSHEN_APP_ID'];
-                                      JAPP_PATH = dotenv.env['YUANSHEN_APP_PATH'];
-                                      APP_NAME = dotenv.env['APP_NAME2'];
-                                    } else {
-                                      APP_ID = dotenv.env['JUEQU_APP_ID'];
-                                      JAPP_PATH = dotenv.env['JUEQU_APP_PATH'];
-                                      APP_NAME = dotenv.env['APP_NAME'];
-                                    }
+                                        String? APP_ID = "";
+                                        String? JAPP_PATH = "";
+                                        if (role.gameName == "原神") {
+                                          APP_ID = dotenv.env['YUANSHEN_APP_ID'];
+                                          JAPP_PATH = dotenv.env['YUANSHEN_APP_PATH'];
+                                          APP_NAME = dotenv.env['APP_NAME2'];
+                                        } else {
+                                          APP_ID = dotenv.env['JUEQU_APP_ID'];
+                                          JAPP_PATH = dotenv.env['JUEQU_APP_PATH'];
+                                          APP_NAME = dotenv.env['APP_NAME'];
+                                        }
 
-                                    if (APP_ID == null || APP_ID == "") {
-                                      // 复制到剪切板
-                                      Clipboard.setData(ClipboardData(text: wishUrl));
-                                      BrnDialogManager.showSingleButtonDialog(context,
-                                          title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!", label: '复制', onTap: () async {
-                                        BrnToast.show(
-                                          "已复制到剪切板,快去$APP_NAME使用吧!",
-                                          context,
-                                          preIcon: Image.asset(
-                                            "assets/images/icon_toast_success.png",
-                                            width: 24,
-                                            height: 24,
-                                          ),
-                                          duration: const Duration(seconds: 2),
-                                        );
-                                        Navigator.pop(context);
-                                      });
-                                      return;
-                                    }
-                                    final String wechatUrl =
-                                        'weixin://dl/business/?appid=$APP_ID&path=$JAPP_PATH&query=key=$wishUrl&env_version=release';
-                                    var uri = Uri.parse(wechatUrl);
-                                    // 尝试打开微信小程序深层链接
-                                    if (await canLaunchUrl(uri)) {
-                                      launchUrl(uri, mode: LaunchMode.externalApplication);
-                                    }
-                                    // 复制到剪切板
-                                    Clipboard.setData(ClipboardData(text: wishUrl));
-                                    BrnDialogManager.showSingleButtonDialog(context,
-                                        title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!", label: '复制', onTap: () async {
-                                      BrnToast.show(
-                                        "已复制到剪切板,快去$APP_NAME使用吧!",
-                                        context,
-                                        preIcon: Image.asset(
-                                          "assets/images/icon_toast_success.png",
-                                          width: 24,
-                                          height: 24,
-                                        ),
-                                        duration: const Duration(seconds: 2),
-                                      );
-                                      Navigator.pop(context);
-                                    });
-                                  },
-                                  child: const Text('获取抽卡链接'),
-                                ),
+                                        if (APP_ID == null || APP_ID == "") {
+                                          // 复制到剪切板
+                                          Clipboard.setData(ClipboardData(text: wishUrl));
+                                          BrnDialogManager.showSingleButtonDialog(context,
+                                              title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!",
+                                              label: '复制', onTap: () async {
+                                            BrnToast.show(
+                                              "已复制到剪切板,快去$APP_NAME使用吧!",
+                                              context,
+                                              preIcon: Image.asset(
+                                                "assets/images/icon_toast_success.png",
+                                                width: 24,
+                                                height: 24,
+                                              ),
+                                              duration: const Duration(seconds: 2),
+                                            );
+                                            Navigator.pop(context);
+                                          });
+                                          return;
+                                        }
+                                        final String wechatUrl =
+                                            'weixin://dl/business/?appid=$APP_ID&path=$JAPP_PATH&query=key=$wishUrl&env_version=release';
+                                        var uri = Uri.parse(wechatUrl);
+                                        // 尝试打开微信小程序深层链接
+                                        if (await canLaunchUrl(uri)) {
+                                          launchUrl(uri, mode: LaunchMode.externalApplication);
+                                        }
+                                        // 复制到剪切板
+                                        Clipboard.setData(ClipboardData(text: wishUrl));
+                                        BrnDialogManager.showSingleButtonDialog(context,
+                                            title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!",
+                                            label: '复制', onTap: () async {
+                                          BrnToast.show(
+                                            "已复制到剪切板,快去$APP_NAME使用吧!",
+                                            context,
+                                            preIcon: Image.asset(
+                                              "assets/images/icon_toast_success.png",
+                                              width: 24,
+                                              height: 24,
+                                            ),
+                                            duration: const Duration(seconds: 2),
+                                          );
+                                          Navigator.pop(context);
+                                        });
+                                      },
+                                      child: const Text('获取抽卡链接'),
+                                    ),
+                                    OutlinedButton(
+                                      onPressed: () async {
+                                        // Handle button press
+                                        final miHoYoUtils = MiHoYoUtils();
+                                        BrnLoadingDialog.show(context);
+                                        final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
+                                        if (characterInfo != null) {
+                                          /// TODO: 直接大批量插入
+                                          for (var character in characterInfo.avatar_list) {
+                                            print(character.toJson());
+                                          }
+                                        } else {
+                                          BrnToast.show(
+                                            "获取出错了,如果一直出错请重新登录!",
+                                            context,
+                                            preIcon: Image.asset(
+                                              "assets/images/icon_toast_success.png",
+                                              width: 24,
+                                              height: 24,
+                                            ),
+                                            duration: const Duration(seconds: 2),
+                                          );
+                                        }
+                                      },
+                                      child: const Text('提交展柜数据'),
+                                    )
+                                  ],
+                                )
                               ],
                             ),
                           ),

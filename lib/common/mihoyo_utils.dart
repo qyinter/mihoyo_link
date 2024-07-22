@@ -2,11 +2,15 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/api_utils.dart';
+import 'package:yuanmo_link/model/mihoyo_fp.dart';
 import 'package:yuanmo_link/model/mihoyo_game_role.dart';
 import 'package:yuanmo_link/model/mihoyo_login.dart';
 import 'package:yuanmo_link/model/mihoyo_mmt.dart';
@@ -14,6 +18,7 @@ import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/model/mihoyo_token.dart';
 import 'package:yuanmo_link/model/mihoyo_user_info.dart';
 import 'package:yuanmo_link/model/mihoyo_qrcode.dart';
+import 'package:yuanmo_link/model/mihoyo_zzz_%20avatar_list.dart';
 import 'package:yuanmo_link/store/global.dart';
 
 /// mihoyoBaseUrl
@@ -96,6 +101,68 @@ CgGs52bFoYMtyi+xEQIDAQAB
         List.generate(length - prefix.length, (index) => chars[random.nextInt(chars.length)]).join('');
 
     return '$prefix$randomString';
+  }
+
+  Map<String, String> brandMapping = {
+    "Xiaomi": "小米手机",
+    "Apple": "苹果手机",
+    "Samsung": "三星手机",
+    "Huawei": "华为手机",
+    "Oppo": "OPPO手机",
+    "Vivo": "VIVO手机",
+    "OnePlus": "一加手机",
+    "Google": "谷歌手机",
+    "Sony": "索尼手机",
+    "LG": "LG手机",
+    "Nokia": "诺基亚手机",
+    "Asus": "华硕手机",
+    "HTC": "HTC手机",
+    "Motorola": "摩托罗拉手机",
+    "Realme": "真我手机",
+  };
+
+  Future<QrCodeResult?> getAndroidFp() async {
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    const platform = MethodChannel('com.qyinter.miyou_link/device');
+    final result = await platform.invokeMapMethod<String, dynamic>('getDeviceInfo');
+    var androidInfo = await deviceInfoPlugin.androidInfo;
+    final sdCapacity = result?['sdCapacity'] ?? 'unknown';
+    final ramRemain = result?['ramRemain'] ?? 'unknown';
+    final screenSize = result?['screenSize'] ?? 'unknown';
+    final hostName = result?['hostName'] ?? 'unknown';
+    final buildTags = result?['buildTags'] ?? 'unknown';
+    final buildType = result?['buildType'] ?? 'unknown';
+    final buildTime = result?['buildTime'] ?? 'unknown';
+    final buildUser = result?['buildUser'] ?? 'unknown';
+    final simState = result?['simState'] ?? 'unknown';
+    final deviceInfo = result?['deviceInfo'] ?? 'unknown';
+
+    print("romCapacity:512");
+    print("deviceName:${brandMapping[androidInfo.brand] ?? '未知手机'}");
+    print("productName:${androidInfo.device}");
+    print("hostname:$hostName");
+    print("romRemain:497");
+    print("screenSize:$screenSize");
+    print("model:${androidInfo.model}");
+    print("brand:${androidInfo.board}");
+    print("hardware:${androidInfo.hardware}");
+    print("deviceType:${androidInfo.device}");
+    print("serialNumber:unknown");
+    print("sdCapacity:$sdCapacity");
+    print("buildTime:$buildTime");
+    print("buildUser:$buildUser");
+    print("simState:$simState");
+    print("ramRemain:$ramRemain");
+    print("appUpdateTimeDiff:1721572819246");
+    print(
+        "deviceInfo:${androidInfo.brand}/${androidInfo.device}/${androidInfo.device}:${androidInfo.version.release}/${androidInfo.display}/${androidInfo.version.incremental}:$buildType/$buildTags");
+    print("buildType:$buildType");
+    print("sdkVersion:${androidInfo.version.sdkInt}");
+    // print("ui_mode:${androidInfo.version.sdkInt}");
+    // print("isMockLocation:${androidInfo.version.sdkInt}");
+
+    // productName: androidInfo.device
+    // DeviceInfo(romCapacity: "512", deviceName: deviceName, productName: productName, romRemain: romRemain, hostname: hostname, screenSize: screenSize, isTablet: isTablet, aaid: aaid, model: model, brand: brand, hardware: hardware, deviceType: deviceType, devId: devId, serialNumber: serialNumber, sdCapacity: sdCapacity, buildTime: buildTime, buildUser: buildUser, simState: simState, ramRemain: ramRemain, appUpdateTimeDiff: appUpdateTimeDiff, deviceInfo: deviceInfo, vaid: vaid, buildType: buildType, sdkVersion: sdkVersion, uiMode: uiMode, isMockLocation: isMockLocation, cpuType: cpuType, isAirMode: isAirMode, ringMode: ringMode, chargeStatus: chargeStatus, manufacturer: manufacturer, emulatorStatus: emulatorStatus, appMemory: appMemory, osVersion: osVersion, vendor: vendor, accelerometer: accelerometer, sdRemain: sdRemain, buildTags: buildTags, packageName: packageName, networkType: networkType, oaid: oaid, debugStatus: debugStatus, ramCapacity: ramCapacity, magnetometer: magnetometer, display: display, appInstallTimeDiff: appInstallTimeDiff, packageVersion: packageVersion, gyroscope: gyroscope, batteryStatus: batteryStatus, hasKeyboard: hasKeyboard, board: board)
   }
 
   /// 获取游戏登录二维码
@@ -498,6 +565,53 @@ CgGs52bFoYMtyi+xEQIDAQAB
       final MihoyoResult<MihoyoUserInfo> resp = MihoyoResult<MihoyoUserInfo>.fromJson(
         result.data,
         (json) => MihoyoUserInfo.fromJson(json),
+      );
+      if (resp.retcode == 0) {
+        return resp.data;
+      } else {
+        throw Exception("Failed to check scan status: ${resp.retcode}");
+      }
+    } else {
+      throw Exception("Failed to check scan status");
+    }
+  }
+
+  /// 获取所有角色基本信息
+  Future<ZZZAvatarList?> getCharacterInfo(MihoyoGameRole role, GameRoleInfo info) async {
+    final uuid = const Uuid().v4();
+    final Response result = await _dio.get(
+      "https://api-takumi-record.mihoyo.com/event/game_record_zzz/api/zzz/avatar/basic?server=${role.region}&role_id=${role.gameUid}",
+      options: Options(
+        headers: {
+          'Host': 'api-takumi-record.mihoyo.com',
+          'Connection': 'keep-alive',
+          'x-rpc-platform': '2',
+          'Origin': 'https://act.mihoyo.com',
+          'x-rpc-geetest_ext': '{"viewUid":"0","gameId":8,"page":"v1.0.20_#/zzz/roles/all","isHost":1}',
+          'x-rpc-app_version': '2.73.1',
+          'x-rpc-language': 'zh-cn',
+          'User-Agent':
+              'Mozilla/5.0 (Linux; Android 9; MI 9 Build/PKQ1.181121.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.136 Mobile Safari/537.36 miHoYoBBS/2.73.1',
+          'x-rpc-device_id': uuid,
+          'Accept': 'application/json, text/plain, */*',
+          'x-rpc-device_name': 'Xiaomi MI 9',
+          'x-rpc-page': 'v1.0.20_#/zzz/roles/all',
+          "x-rpc-device_fp": generateCustomId(),
+          'x-rpc-lang': 'zh-cn',
+          'x-rpc-sys_version': '9',
+          'Referer':
+              'https://act.mihoyo.com/app/mihoyo-zzz-game-record/m.html?mhy_presentation_style=fullscreen&bbs_auth_required=true&game_id%5B0%5D=8&game_id%5B1%5D=8&user_id=${Global.miyousheAcount}&uid=${Global.miyousheAcount}',
+          'Accept-Encoding': 'gzip, deflate',
+          'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+          "Cookie": Global.mihoyoCookie,
+          "X-Requested-With": "com.mihoyo.hyperion"
+        },
+      ),
+    );
+    if (result.statusCode == 200) {
+      final MihoyoResult<ZZZAvatarList> resp = MihoyoResult<ZZZAvatarList>.fromJson(
+        result.data,
+        (json) => ZZZAvatarList.fromJson(json),
       );
       if (resp.retcode == 0) {
         return resp.data;

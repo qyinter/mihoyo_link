@@ -4,111 +4,111 @@ part 'mihoyo_fp.g.dart';
 
 @JsonSerializable()
 class DeviceInfo {
-  final String cpuType;
   final String romCapacity;
+  final String deviceName;
   final String productName;
   final String romRemain;
-  final String manufacturer;
-  final String appMemory;
   final String hostname;
   final String screenSize;
-  final String osVersion;
+  final int isTablet;
   final String aaid;
-  final String vendor;
-  final String accelerometer;
-  final String buildTags;
   final String model;
   final String brand;
-  final String oaid;
   final String hardware;
   final String deviceType;
   final String devId;
   final String serialNumber;
+  final int sdCapacity;
   final String buildTime;
   final String buildUser;
+  final int simState;
+  final String ramRemain;
+  final int appUpdateTimeDiff;
+  final String deviceInfo;
+  final String buildType;
+  final String sdkVersion;
+  final String uiMode;
+  final int isMockLocation;
+  final String cpuType;
+  final int isAirMode;
+  final int ringMode;
+  final int chargeStatus;
+  final String manufacturer;
+  final int emulatorStatus;
+  final String appMemory;
+  final String osVersion;
+  final String vendor;
+  final String accelerometer;
+  final int sdRemain;
+  final String buildTags;
+  final String packageName;
+  final String networkType;
+  final String oaid;
+  final int debugStatus;
   final String ramCapacity;
   final String magnetometer;
   final String display;
-  final String ramRemain;
-  final String deviceInfo;
+  final int appInstallTimeDiff;
+  final String packageVersion;
   final String gyroscope;
-  final String vaid;
-  final String buildType;
-  final String sdkVersion;
+  final int batteryStatus;
+  final int hasKeyboard;
   final String board;
 
   DeviceInfo({
-    required this.cpuType,
     required this.romCapacity,
+    required this.deviceName,
     required this.productName,
     required this.romRemain,
-    required this.manufacturer,
-    required this.appMemory,
     required this.hostname,
     required this.screenSize,
-    required this.osVersion,
+    required this.isTablet,
     required this.aaid,
-    required this.vendor,
-    required this.accelerometer,
-    required this.buildTags,
     required this.model,
     required this.brand,
-    required this.oaid,
     required this.hardware,
     required this.deviceType,
     required this.devId,
     required this.serialNumber,
+    required this.sdCapacity,
     required this.buildTime,
     required this.buildUser,
+    required this.simState,
+    required this.ramRemain,
+    required this.appUpdateTimeDiff,
+    required this.deviceInfo,
+    required this.buildType,
+    required this.sdkVersion,
+    required this.uiMode,
+    required this.isMockLocation,
+    required this.cpuType,
+    required this.isAirMode,
+    required this.ringMode,
+    required this.chargeStatus,
+    required this.manufacturer,
+    required this.emulatorStatus,
+    required this.appMemory,
+    required this.osVersion,
+    required this.vendor,
+    required this.accelerometer,
+    required this.sdRemain,
+    required this.buildTags,
+    required this.packageName,
+    required this.networkType,
+    required this.oaid,
+    required this.debugStatus,
     required this.ramCapacity,
     required this.magnetometer,
     required this.display,
-    required this.ramRemain,
-    required this.deviceInfo,
+    required this.appInstallTimeDiff,
+    required this.packageVersion,
     required this.gyroscope,
-    required this.vaid,
-    required this.buildType,
-    required this.sdkVersion,
+    required this.batteryStatus,
+    required this.hasKeyboard,
     required this.board,
   });
 
-  factory DeviceInfo.fromJson(Map<String, dynamic> json) {
-    return DeviceInfo(
-      cpuType: json['cpuType'] ?? 'arm64-v8a',
-      romCapacity: json['romCapacity'] ?? '512',
-      productName: json['productName'] ?? 'ishtar',
-      romRemain: json['romRemain'] ?? '459',
-      manufacturer: json['manufacturer'] ?? 'Xiaomi',
-      appMemory: json['appMemory'] ?? '512',
-      hostname: json['hostname'] ?? 'xiaomi.eu',
-      screenSize: json['screenSize'] ?? '1440x3022',
-      osVersion: json['osVersion'] ?? '13',
-      aaid: json['aaid'] ?? 'a945fe0c-5f49-4481-9ee8-418e74508414',
-      vendor: json['vendor'] ?? '中国电信',
-      accelerometer: json['accelerometer'] ?? '0.061016977x0.8362915x9.826724',
-      buildTags: json['buildTags'] ?? 'release-keys',
-      model: json['model'] ?? '2304FPN6DC',
-      brand: json['brand'] ?? 'Xiaomi',
-      oaid: json['oaid'] ?? '67b292338ad57a24',
-      hardware: json['hardware'] ?? 'qcom',
-      deviceType: json['deviceType'] ?? 'ishtar',
-      devId: json['devId'] ?? 'REL',
-      serialNumber: json['serialNumber'] ?? 'unknown',
-      buildTime: json['buildTime'] ?? '1690889245000',
-      buildUser: json['buildUser'] ?? 'builder',
-      ramCapacity: json['ramCapacity'] ?? '229481',
-      magnetometer: json['magnetometer'] ?? '80.64375x-14.1x77.90625',
-      display: json['display'] ?? 'TKQ1.221114.001 release-keys',
-      ramRemain: json['ramRemain'] ?? '110308',
-      deviceInfo: json['deviceInfo'] ?? 'Xiaomi/ishtar/ishtar:13/TKQ1.221114.001/V14.0.17.0.TMACNXM:user/release-keys',
-      gyroscope: json['gyroscope'] ?? '7.9894776E-4x-1.3315796E-4x6.6578976E-4',
-      vaid: json['vaid'] ?? '4c10d338150078d8',
-      buildType: json['buildType'] ?? 'user',
-      sdkVersion: json['sdkVersion'] ?? '33',
-      board: json['board'] ?? 'kalama',
-    );
-  }
-
+  factory DeviceInfo.fromJson(Map<String, dynamic> json) => _$DeviceInfoFromJson(json);
   Map<String, dynamic> toJson() => _$DeviceInfoToJson(this);
 }
 
