@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/routes/route_generator.dart';
 import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_exception.dart';
@@ -11,6 +12,14 @@ import 'package:yuanmo_link/store/global_store.dart';
 void main() {
   runZonedGuarded(() async {
     await dotenv.load(fileName: getEnvFileName());
+
+    final utils = MiHoYoUtils();
+    try {
+      utils.getAndroidFp();
+    } catch (e) {
+      Global.saveDeviceFp(utils.generateCustomId());
+    }
+
     await Global.init();
     runApp(
       MultiProvider(

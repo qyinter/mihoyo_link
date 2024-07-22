@@ -1,5 +1,6 @@
 package com.qyinter.miyou_link
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -12,9 +13,11 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import android.telephony.TelephonyManager
-
+import java.util.UUID
 import com.github.gzuliyujiang.oaid.DeviceID;
 import com.github.gzuliyujiang.oaid.IGetter;
+import android.provider.Settings
+
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.qyinter.miyou_link/device"
@@ -33,11 +36,34 @@ class MainActivity : FlutterActivity() {
                         result.success(oaidMap)
                     }
                 }
+                "getDeviceId" -> {
+                    val deviceId = getDeviceId(context)
+                    val deviceIdMap = mapOf("deviceId" to deviceId)
+                    result.success(deviceIdMap)
+                }
+                "getAndroidId" -> {
+                    val androidId = getAndroidId(context)
+                    val androidIdMap = mapOf("androidId" to androidId)
+                    result.success(androidIdMap)
+                }
                 else -> {
                     result.notImplemented()
                 }
             }
         }
+    }
+
+    @SuppressLint("HardwareIds")
+    private fun getDeviceId(context: Context): String {
+        val androidId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        val uuid = UUID.nameUUIDFromBytes(androidId.toByteArray())
+        return uuid.toString()
+    }
+
+    @SuppressLint("HardwareIds")
+    fun getAndroidId(context: Context): String {
+        val androidId = Settings.Secure.getString(context.contentResolver, Settings.System.ANDROID_ID)
+        return androidId
     }
 
     private fun getDeviceInfo(): Map<String, Any> {

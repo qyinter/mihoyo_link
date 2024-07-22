@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/api_utils.dart';
@@ -121,11 +122,26 @@ CgGs52bFoYMtyi+xEQIDAQAB
     "Realme": "真我手机",
   };
 
-  Future<QrCodeResult?> getAndroidFp() async {
+  int parseInt(dynamic value, String fieldName) {
+    if (value is int) return value;
+    if (value is String) {
+      return int.tryParse(value) ?? (throw FormatException("Cannot parse $fieldName to int: $value"));
+    }
+    throw FormatException("Invalid type for $fieldName: ${value.runtimeType}");
+  }
+
+  String parseString(dynamic value, String fieldName) {
+    if (value is String) return value;
+    return value.toString();
+  }
+
+  Future<Void?> getAndroidFp() async {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     const platform = MethodChannel('com.qyinter.miyou_link/device');
     final result = await platform.invokeMapMethod<String, dynamic>('getDeviceInfo');
     final oaidMap = await platform.invokeMapMethod<String, dynamic>('getOaid');
+    final deviceIdMap = await platform.invokeMapMethod<String, dynamic>('getDeviceId');
+    final androidIdMap = await platform.invokeMapMethod<String, dynamic>('getAndroidId');
 
     var androidInfo = await deviceInfoPlugin.androidInfo;
     final sdCapacity = result?['sdCapacity'] ?? 'unknown';
@@ -140,141 +156,44 @@ CgGs52bFoYMtyi+xEQIDAQAB
     final cpuType = result?['cpuType'] ?? 'unknown';
     final manufacturer = result?['manufacturer'] ?? 'unknown';
 
-    print("romCapacity:512");
-    print("deviceName:${brandMapping[androidInfo.brand] ?? '未知手机'}");
-    print("productName:${androidInfo.device}");
-    print("hostname:$hostName");
-    print("romRemain:497");
-    print("screenSize:$screenSize");
-    print("isTablet:0");
-    print("aaid:error_1008003");
-    print("model:${androidInfo.model}");
-    print("brand:${androidInfo.brand}");
-    print("hardware:${androidInfo.hardware}");
-    print("deviceType:${androidInfo.device}");
-    print("devId:REL");
-    print("serialNumber:unknown");
-    print("sdCapacity:$sdCapacity");
-    print("buildTime:$buildTime");
-    print("buildUser:$buildUser");
-    print("simState:$simState");
-    print("ramRemain:$ramRemain");
-    print("appUpdateTimeDiff:1721572819246");
-    print(
-        "deviceInfo:${androidInfo.brand}/${androidInfo.device}/${androidInfo.device}:${androidInfo.version.release}/${androidInfo.display}/${androidInfo.version.incremental}:$buildType/$buildTags");
-    print("vaid:error_1008003");
-    print("buildType:$buildType");
-    print("sdkVersion:${androidInfo.version.sdkInt}");
-    print("ui_mode:UI_MODE_TYPE_NORMAL");
-    print("isMockLocation:0");
-    print("cpuType:$cpuType");
-    print("isAirMode:0");
-    print("ringMode:1");
-    print("chargeStatus:3");
-    print("manufacturer:$manufacturer");
-    print("emulatorStatus:0");
-    print("appMemory:512");
-    print("osVersion:${androidInfo.version.release}");
-    print("vendor:unknown");
-    print("accelerometer:accelerometer");
-    print("sdRemain:$ramRemain");
-    print("accelerometer:1.1918782x4.003556x8.735291");
-    print("buildTags:$buildTags");
-    print("packageName:com.mihoyo.hyperion");
-    print("networkType:WiFi");
-    print("vaid:error_1008003");
-    print("oaid:${oaidMap?['oaid'] ?? 'unknown'}");
-    print("debugStatus:1");
-    print("ramCapacity:$sdCapacity");
-    print("magnetometer:-60.929684x-44.194122x42.59439");
-    print("display:${androidInfo.display}");
-    print("appInstallTimeDiff: 1721572819246");
-    print("packageVersion: 2.20.2");
-    print("gyroscope: -0.0023837525x0.08423652x0.005653145");
-    print("batteryStatus: 79");
-    print("hasKeyboard: 0");
-    print("board: ${androidInfo.board}");
+    var uuid = const Uuid().v4();
+    var bbs_device_id = const Uuid().v4();
 
-    try {
-      final deviceInfo = DeviceInfo(
-          romCapacity: "512",
-          deviceName: brandMapping[androidInfo.brand] ?? '未知手机',
-          productName: androidInfo.device,
-          romRemain: "497",
-          hostname: hostName,
-          screenSize: screenSize,
-          isTablet: 0,
-          aaid: "error_1008003",
-          model: androidInfo.model,
-          brand: androidInfo.brand,
-          hardware: androidInfo.hardware,
-          deviceType: androidInfo.device,
-          devId: "REL",
-          serialNumber: "unknown",
-          sdCapacity: sdCapacity,
-          buildTime: buildTime.toString(),
-          buildUser: buildUser,
-          simState: simState,
-          ramRemain: ramRemain.toString(),
-          appUpdateTimeDiff: 1721572819246,
-          deviceInfo:
-              "${androidInfo.brand}/${androidInfo.device}/${androidInfo.device}:${androidInfo.version.release}/${androidInfo.display}/${androidInfo.version.incremental}:$buildType/$buildTags",
-          vaid: "error_1008003",
-          buildType: buildType.toString(),
-          sdkVersion: androidInfo.version.sdkInt.toString(),
-          uiMode: "UI_MODE_TYPE_NORMAL",
-          isMockLocation: 0,
-          cpuType: cpuType.toString(),
-          isAirMode: 0,
-          ringMode: 1,
-          chargeStatus: 3,
-          manufacturer: manufacturer,
-          emulatorStatus: 0,
-          appMemory: "512",
-          osVersion: androidInfo.version.release.toString(),
-          vendor: "unknown",
-          accelerometer: "1.1918782x4.003556x8.735291",
-          sdRemain: ramRemain,
-          buildTags: buildTags,
-          packageName: "com.mihoyo.hyperion",
-          networkType: "WiFi",
-          oaid: oaidMap?['oaid'] ?? 'unknown',
-          debugStatus: 1,
-          ramCapacity: sdCapacity.toString(),
-          magnetometer: "-60.929684x-44.194122x42.59439",
-          display: androidInfo.display,
-          appInstallTimeDiff: 1721572819246,
-          packageVersion: "2.20.2",
-          gyroscope: "-0.0023837525x0.08423652x0.005653145",
-          batteryStatus: 79,
-          hasKeyboard: 0,
-          board: androidInfo.board);
-    } catch (e) {
-      print(e);
+    final fpBody = FpBody(
+      device_id: androidIdMap?['androidId'] ?? const Uuid().v4(),
+      seed_id: uuid,
+      seed_time: "${DateTime.now().millisecondsSinceEpoch}",
+      platform: "2",
+      device_fp: "0331573827",
+      app_name: "bbs_cn",
+      ext_fields:
+          "{\"proxyStatus\":0,\"isRoot\":0,\"romCapacity\":\"512\",\"deviceName\":\"${brandMapping[androidInfo.brand] ?? '未知手机'}\",\"productName\":\"${androidInfo.device}\",\"romRemain\":\"497\",\"hostname\":\"$hostName\",\"screenSize\":\"$screenSize\",\"isTablet\":0,\"aaid\":\"error_1008003\",\"model\":\"${androidInfo.model}\",\"brand\":\"${androidInfo.brand}\",\"hardware\":\"${androidInfo.hardware}\",\"deviceType\":\"${androidInfo.device}\",\"devId\":\"REL\",\"serialNumber\":\"unknown\",\"sdCapacity\":$sdCapacity,\"buildTime\":\"$buildTime\",\"buildUser\":\"$buildUser\",\"simState\":$simState,\"ramRemain\":\"$ramRemain\",\"appUpdateTimeDiff\":1721572819246,\"deviceInfo\":\"${androidInfo.brand}\\/${androidInfo.device}\\/${androidInfo.device}:${androidInfo.version.release}\\/${androidInfo.display}\\/${androidInfo.version.incremental}:$buildType\\/$buildTags\",\"vaid\":\"error_1008003\",\"buildType\":\"$buildType\",\"sdkVersion\":\"${androidInfo.version.sdkInt}\",\"ui_mode\":\"UI_MODE_TYPE_NORMAL\",\"isMockLocation\":0,\"cpuType\":\"$cpuType\",\"isAirMode\":0,\"ringMode\":1,\"chargeStatus\":3,\"manufacturer\":\"$manufacturer\",\"emulatorStatus\":0,\"appMemory\":\"512\",\"osVersion\":\"${androidInfo.version.release}\",\"vendor\":\"unknown\",\"accelerometer\":\"1.1918782x4.003556x8.735291\",\"sdRemain\":$ramRemain,\"buildTags\":\"$buildTags\",\"packageName\":\"com.mihoyo.hyperion\",\"networkType\":\"WiFi\",\"oaid\":\"${oaidMap?['oaid'] ?? 'unknown'}\",\"debugStatus\":1,\"ramCapacity\":\"$sdCapacity\",\"magnetometer\":\"-60.929684x-44.194122x42.59439\",\"display\":\"${androidInfo.display}\",\"appInstallTimeDiff\":1721572819246,\"packageVersion\":\"2.20.2\",\"gyroscope\":\"-0.0023837525x0.08423652x0.005653145\",\"batteryStatus\":79,\"hasKeyboard\":0,\"board\":\"${androidInfo.board}\"}",
+      bbs_device_id: "${deviceIdMap?['deviceId'] ?? bbs_device_id}",
+    );
+
+    final Response fpRes = await _dio.post(
+      "https://public-data-api.mihoyo.com/device-fp/api/getFp",
+      data: fpBody.toJson(),
+      options: Options(
+        headers: {"Content-Type": "application/json;charset=utf-8"},
+      ),
+    );
+    if (fpRes.statusCode == 200) {
+      final MihoyoResult<FpResult> resp = MihoyoResult<FpResult>.fromJson(
+        fpRes.data,
+        (json) => FpResult.fromJson(json),
+      );
+      if (resp.retcode == 0 && resp.data != null) {
+        Global.saveBbsDeviceId(deviceIdMap?['deviceId'] ?? bbs_device_id);
+        Global.saveDeviceFp(resp.data!.device_fp);
+        print("device_fp: ${Global.deviceFp}");
+        print("bbs_device_id:  ${Global.bbsDeviceId}");
+      } else {
+        Global.saveDeviceFp(generateCustomId());
+      }
+    } else {
+      Global.saveDeviceFp(generateCustomId());
     }
-
-    // var uuid = const Uuid().v4();
-    // final t = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    // final fpBody = FpBody(
-    //     device_id: "cdc705cf702ddb06",
-    //     seed_id: uuid,
-    //     seed_time: "$t",
-    //     platform: "2",
-    //     device_fp: generateCustomId(),
-    //     app_name: "bbs_cn",
-    //     ext_fields: "${deviceInfo.toJson()}",
-    //     bbs_device_id: "e96d003a-edfa-3e4c-8d70-9df55007bdc4");
-
-    // final Response fpRes = await _dio.post(
-    //   "https://public-data-api.mihoyo.com/device-fp/api/getFp",
-    //   data: fpBody.toJson(),
-    //   options: Options(
-    //     headers: {"Content-Type": "application/json;charset=utf-8"},
-    //   ),
-    // );
-    // if (fpRes.statusCode == 200) {
-    //   print(fpRes.data);
-    // }
   }
 
   /// 获取游戏登录二维码
@@ -377,7 +296,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
           "Cookie": cookie,
           "x-rpc-client_type": "5",
           "x-rpc-app_version": "2.71.1",
-          "x-rpc-device_id": const Uuid().v4(),
+          "x-rpc-device_id": Global.bbsDeviceId,
           "DS": getDs()
         },
       ),
@@ -411,7 +330,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
             "Cookie": cookie,
             "x-rpc-client_type": "5",
             "x-rpc-app_version": "2.71.1",
-            "x-rpc-device_id": const Uuid().v4(),
+            "x-rpc-device_id": Global.bbsDeviceId,
             "DS": getDs()
           },
         ),
@@ -453,7 +372,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
           "Cookie": Global.mihoyoCookie,
           "x-rpc-client_type": "5",
           "x-rpc-app_version": "2.71.1",
-          "x-rpc-device_id": const Uuid().v4(),
+          "x-rpc-device_id": Global.bbsDeviceId,
           "DS": getDs()
         },
       ),
@@ -489,7 +408,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
       options: Options(
         headers: {
           "Content-Type": "application/json;charset=utf-8",
-          "x-rpc-device_id": const Uuid().v4(),
+          "x-rpc-device_id": Global.bbsDeviceId,
         },
       ),
     );
@@ -516,7 +435,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
       options: Options(
         headers: {
           "Content-Type": "application/json;charset=utf-8",
-          "x-rpc-device_id": const Uuid().v4(),
+          "x-rpc-device_id": Global.bbsDeviceId,
         },
       ),
     );
@@ -549,7 +468,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
       "x-rpc-app_version": "2.71.1",
       "DS": getDs(),
       "x-rpc-client_type": "1",
-      "x-rpc-device_id": uuid,
+      "x-rpc-device_id": Global.bbsDeviceId,
       "x-rpc-sdk_version": "2.20.1",
       "x-rpc-sys_version": "17.5.1",
       "x-rpc-game_biz": "bbs_cn"
@@ -598,11 +517,11 @@ CgGs52bFoYMtyi+xEQIDAQAB
       "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
       "x-rpc-account_version": "2.20.1",
       "x-rpc-app_id": "bll8iq97cem8",
-      "x-rpc-device_fp": generateCustomId(),
+      "x-rpc-device_fp": Global.deviceFp,
       "x-rpc-app_version": "2.71.1",
       "DS": getDs(),
       "x-rpc-client_type": "1",
-      "x-rpc-device_id": uuid,
+      "x-rpc-device_id": Global.bbsDeviceId,
       "x-rpc-sdk_version": "2.20.1",
       "x-rpc-sys_version": "17.5.1",
       "x-rpc-game_biz": "bbs_cn"
@@ -662,11 +581,11 @@ CgGs52bFoYMtyi+xEQIDAQAB
           "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
           "x-rpc-account_version": "2.20.1",
           "x-rpc-app_id": "bll8iq97cem8",
-          "x-rpc-device_fp": generateCustomId(),
+          "x-rpc-device_fp": Global.deviceFp,
           "x-rpc-app_version": "2.71.1",
           "DS": getDs(),
           "x-rpc-client_type": "1",
-          "x-rpc-device_id": uuid,
+          "x-rpc-device_id": Global.bbsDeviceId,
           "x-rpc-sdk_version": "2.20.1",
           "x-rpc-sys_version": "17.5.1",
           "x-rpc-game_biz": "bbs_cn"
@@ -704,11 +623,11 @@ CgGs52bFoYMtyi+xEQIDAQAB
           'x-rpc-language': 'zh-cn',
           'User-Agent':
               'Mozilla/5.0 (Linux; Android 9; MI 9 Build/PKQ1.181121.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.136 Mobile Safari/537.36 miHoYoBBS/2.73.1',
-          'x-rpc-device_id': uuid,
+          'x-rpc-device_id': Global.bbsDeviceId,
           'Accept': 'application/json, text/plain, */*',
           'x-rpc-device_name': 'Xiaomi MI 9',
           'x-rpc-page': 'v1.0.20_#/zzz/roles/all',
-          "x-rpc-device_fp": generateCustomId(),
+          "x-rpc-device_fp": Global.deviceFp,
           'x-rpc-lang': 'zh-cn',
           'x-rpc-sys_version': '9',
           'Referer':

@@ -28,6 +28,8 @@ class Global {
   static String mid = ""; //  mihoyo id
   static String mihoyoCookie = ""; // 米哈游cookie
   static String userFp = ""; // 用户设备信息
+  static String deviceFp = ""; // 设备信息
+  static String bbsDeviceId = ""; // bbs设备id
 
   static UserInfo? userInfo; // 用户信息
 
@@ -65,8 +67,15 @@ class Global {
       userInfo = UserInfo.fromJson(jsonDecode(userInfo_));
     }
 
-    final utils = MiHoYoUtils();
-    utils.getAndroidFp();
+    var deviceFp_ = _prefs.getString("deviceFp");
+    if (deviceFp_ != null) {
+      deviceFp = deviceFp_;
+    }
+
+    var bbsDeviceId_ = _prefs.getString("bbsDeviceId");
+    if (bbsDeviceId_ != null) {
+      bbsDeviceId = bbsDeviceId_;
+    }
   }
 
   // 持久化Profile信息
@@ -84,6 +93,9 @@ class Global {
     final String jsonString = jsonEncode(jsonList);
     await _prefs.setString("gamelist", jsonString);
   }
+
+  static saveDeviceFp(s) => {deviceFp = s, _prefs.setString("deviceFp", deviceFp)};
+  static saveBbsDeviceId(s) => {bbsDeviceId = s, _prefs.setString("bbsDeviceId", bbsDeviceId)};
 
   // 加载缓存的所有游戏的角色数据信息
   static List<GameRoleInfo> loadGameRoleList() {

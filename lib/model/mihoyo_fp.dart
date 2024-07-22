@@ -139,3 +139,31 @@ class FpBody {
   factory FpBody.fromJson(Map<String, dynamic> json) => _$FpBodyFromJson(json);
   Map<String, dynamic> toJson() => _$FpBodyToJson(this);
 }
+
+class FpResult {
+  final String device_fp;
+  final int code;
+  final String msg;
+
+  FpResult({
+    required this.device_fp,
+    required this.code,
+    required this.msg,
+  });
+
+  factory FpResult.fromJson(Map<String, dynamic> json) {
+    return FpResult(
+      device_fp: json['device_fp'],
+      code: json['code'],
+      msg: json['msg'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'device_fp': device_fp,
+      'code': code,
+      'msg': msg,
+    };
+  }
+}
