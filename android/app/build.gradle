@@ -73,6 +73,10 @@ android {
     }
 }
 
+dependencies {
+    implementation("com.github.gzu-liyujiang:Android_CN_OAID:4.2.9")
+}
+
 flutter {
     source = "../.."
 }

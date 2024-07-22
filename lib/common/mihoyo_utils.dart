@@ -125,6 +125,8 @@ CgGs52bFoYMtyi+xEQIDAQAB
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     const platform = MethodChannel('com.qyinter.miyou_link/device');
     final result = await platform.invokeMapMethod<String, dynamic>('getDeviceInfo');
+    final oaidMap = await platform.invokeMapMethod<String, dynamic>('getOaid');
+
     var androidInfo = await deviceInfoPlugin.androidInfo;
     final sdCapacity = result?['sdCapacity'] ?? 'unknown';
     final ramRemain = result?['ramRemain'] ?? 'unknown';
@@ -135,7 +137,8 @@ CgGs52bFoYMtyi+xEQIDAQAB
     final buildTime = result?['buildTime'] ?? 'unknown';
     final buildUser = result?['buildUser'] ?? 'unknown';
     final simState = result?['simState'] ?? 'unknown';
-    final deviceInfo = result?['deviceInfo'] ?? 'unknown';
+    final cpuType = result?['cpuType'] ?? 'unknown';
+    final manufacturer = result?['manufacturer'] ?? 'unknown';
 
     print("romCapacity:512");
     print("deviceName:${brandMapping[androidInfo.brand] ?? '未知手机'}");
@@ -143,10 +146,13 @@ CgGs52bFoYMtyi+xEQIDAQAB
     print("hostname:$hostName");
     print("romRemain:497");
     print("screenSize:$screenSize");
+    print("isTablet:0");
+    print("aaid:error_1008003");
     print("model:${androidInfo.model}");
-    print("brand:${androidInfo.board}");
+    print("brand:${androidInfo.brand}");
     print("hardware:${androidInfo.hardware}");
     print("deviceType:${androidInfo.device}");
+    print("devId:REL");
     print("serialNumber:unknown");
     print("sdCapacity:$sdCapacity");
     print("buildTime:$buildTime");
@@ -156,13 +162,119 @@ CgGs52bFoYMtyi+xEQIDAQAB
     print("appUpdateTimeDiff:1721572819246");
     print(
         "deviceInfo:${androidInfo.brand}/${androidInfo.device}/${androidInfo.device}:${androidInfo.version.release}/${androidInfo.display}/${androidInfo.version.incremental}:$buildType/$buildTags");
+    print("vaid:error_1008003");
     print("buildType:$buildType");
     print("sdkVersion:${androidInfo.version.sdkInt}");
-    // print("ui_mode:${androidInfo.version.sdkInt}");
-    // print("isMockLocation:${androidInfo.version.sdkInt}");
+    print("ui_mode:UI_MODE_TYPE_NORMAL");
+    print("isMockLocation:0");
+    print("cpuType:$cpuType");
+    print("isAirMode:0");
+    print("ringMode:1");
+    print("chargeStatus:3");
+    print("manufacturer:$manufacturer");
+    print("emulatorStatus:0");
+    print("appMemory:512");
+    print("osVersion:${androidInfo.version.release}");
+    print("vendor:unknown");
+    print("accelerometer:accelerometer");
+    print("sdRemain:$ramRemain");
+    print("accelerometer:1.1918782x4.003556x8.735291");
+    print("buildTags:$buildTags");
+    print("packageName:com.mihoyo.hyperion");
+    print("networkType:WiFi");
+    print("vaid:error_1008003");
+    print("oaid:${oaidMap?['oaid'] ?? 'unknown'}");
+    print("debugStatus:1");
+    print("ramCapacity:$sdCapacity");
+    print("magnetometer:-60.929684x-44.194122x42.59439");
+    print("display:${androidInfo.display}");
+    print("appInstallTimeDiff: 1721572819246");
+    print("packageVersion: 2.20.2");
+    print("gyroscope: -0.0023837525x0.08423652x0.005653145");
+    print("batteryStatus: 79");
+    print("hasKeyboard: 0");
+    print("board: ${androidInfo.board}");
 
-    // productName: androidInfo.device
-    // DeviceInfo(romCapacity: "512", deviceName: deviceName, productName: productName, romRemain: romRemain, hostname: hostname, screenSize: screenSize, isTablet: isTablet, aaid: aaid, model: model, brand: brand, hardware: hardware, deviceType: deviceType, devId: devId, serialNumber: serialNumber, sdCapacity: sdCapacity, buildTime: buildTime, buildUser: buildUser, simState: simState, ramRemain: ramRemain, appUpdateTimeDiff: appUpdateTimeDiff, deviceInfo: deviceInfo, vaid: vaid, buildType: buildType, sdkVersion: sdkVersion, uiMode: uiMode, isMockLocation: isMockLocation, cpuType: cpuType, isAirMode: isAirMode, ringMode: ringMode, chargeStatus: chargeStatus, manufacturer: manufacturer, emulatorStatus: emulatorStatus, appMemory: appMemory, osVersion: osVersion, vendor: vendor, accelerometer: accelerometer, sdRemain: sdRemain, buildTags: buildTags, packageName: packageName, networkType: networkType, oaid: oaid, debugStatus: debugStatus, ramCapacity: ramCapacity, magnetometer: magnetometer, display: display, appInstallTimeDiff: appInstallTimeDiff, packageVersion: packageVersion, gyroscope: gyroscope, batteryStatus: batteryStatus, hasKeyboard: hasKeyboard, board: board)
+    try {
+      final deviceInfo = DeviceInfo(
+          romCapacity: "512",
+          deviceName: brandMapping[androidInfo.brand] ?? '未知手机',
+          productName: androidInfo.device,
+          romRemain: "497",
+          hostname: hostName,
+          screenSize: screenSize,
+          isTablet: 0,
+          aaid: "error_1008003",
+          model: androidInfo.model,
+          brand: androidInfo.brand,
+          hardware: androidInfo.hardware,
+          deviceType: androidInfo.device,
+          devId: "REL",
+          serialNumber: "unknown",
+          sdCapacity: sdCapacity,
+          buildTime: buildTime,
+          buildUser: buildUser,
+          simState: simState,
+          ramRemain: "$ramRemain",
+          appUpdateTimeDiff: 1721572819246,
+          deviceInfo:
+              "${androidInfo.brand}/${androidInfo.device}/${androidInfo.device}:${androidInfo.version.release}/${androidInfo.display}/${androidInfo.version.incremental}:$buildType/$buildTags",
+          vaid: "error_1008003",
+          buildType: buildType,
+          sdkVersion: "${androidInfo.version.sdkInt}",
+          uiMode: "UI_MODE_TYPE_NORMAL",
+          isMockLocation: 0,
+          cpuType: cpuType,
+          isAirMode: 0,
+          ringMode: 1,
+          chargeStatus: 3,
+          manufacturer: manufacturer,
+          emulatorStatus: 0,
+          appMemory: "512",
+          osVersion: androidInfo.version.release,
+          vendor: "unknown",
+          accelerometer: "1.1918782x4.003556x8.735291",
+          sdRemain: ramRemain,
+          buildTags: buildTags,
+          packageName: "com.mihoyo.hyperion",
+          networkType: "WiFi",
+          oaid: oaidMap?['oaid'] ?? 'unknown',
+          debugStatus: 1,
+          ramCapacity: "$sdCapacity",
+          magnetometer: "-60.929684x-44.194122x42.59439",
+          display: androidInfo.display,
+          appInstallTimeDiff: 1721572819246,
+          packageVersion: "2.20.2",
+          gyroscope: "-0.0023837525x0.08423652x0.005653145",
+          batteryStatus: 79,
+          hasKeyboard: 0,
+          board: androidInfo.board);
+    } catch (e) {
+      print(e);
+    }
+
+    // var uuid = const Uuid().v4();
+    // final t = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    // final fpBody = FpBody(
+    //     device_id: "cdc705cf702ddb06",
+    //     seed_id: uuid,
+    //     seed_time: "$t",
+    //     platform: "2",
+    //     device_fp: generateCustomId(),
+    //     app_name: "bbs_cn",
+    //     ext_fields: "${deviceInfo.toJson()}",
+    //     bbs_device_id: "e96d003a-edfa-3e4c-8d70-9df55007bdc4");
+
+    // final Response fpRes = await _dio.post(
+    //   "https://public-data-api.mihoyo.com/device-fp/api/getFp",
+    //   data: fpBody.toJson(),
+    //   options: Options(
+    //     headers: {"Content-Type": "application/json;charset=utf-8"},
+    //   ),
+    // );
+    // if (fpRes.statusCode == 200) {
+    //   print(fpRes.data);
+    // }
   }
 
   /// 获取游戏登录二维码

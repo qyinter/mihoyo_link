@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import android.location.LocationManager
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -14,17 +13,29 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import android.telephony.TelephonyManager
 
+import com.github.gzuliyujiang.oaid.DeviceID;
+import com.github.gzuliyujiang.oaid.IGetter;
+
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.qyinter.miyou_link/device"
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            if (call.method == "getDeviceInfo") {
-                val deviceInfo = getDeviceInfo()
-                result.success(deviceInfo)
-            } else {
-                result.notImplemented()
+             when (call.method) {
+                "getDeviceInfo" -> {
+                    val deviceInfo = getDeviceInfo()
+                    result.success(deviceInfo)
+                }
+                "getOaid" -> {
+                    getOaid { oaid ->
+                        val oaidMap = mapOf("oaid" to oaid)
+                        result.success(oaidMap)
+                    }
+                }
+                else -> {
+                    result.notImplemented()
+                }
             }
         }
     }
@@ -39,8 +50,8 @@ class MainActivity : FlutterActivity() {
         val buildTime = Build.TIME
         val buildUser = Build.USER
         val simState = getSimState()
-        val uiMode = getUiMode()
-        val isMockLocation = isMockLocationEnabled()
+        val cpuType = getCpuType()
+        val manufacturer = Build.MANUFACTURER
 
         return mapOf(
             "sdCapacity" to sdCapacity,
@@ -52,11 +63,27 @@ class MainActivity : FlutterActivity() {
             "buildTime" to buildTime,
             "buildUser" to buildUser,
             "simState" to simState,
-            "uiMode" to uiMode,
-            "isMockLocation" to isMockLocation
+            "cpuType" to cpuType,
+            "manufacturer" to manufacturer
         )
     }
 
+    private fun getOaid(callback: (String) -> Unit) {
+        try{
+            DeviceID.getOAID(this, object : IGetter {
+                override fun onOAIDGetComplete(result: String) {
+                    callback(result)
+                }
+
+                override fun onOAIDGetError(error: Exception) {
+                    callback("error_1008003")
+                }
+            })
+        }catch(error: Exception){
+            callback("error_1008003")
+        }
+    }
+    
     private fun getTotalInternalMemorySize(): String {
         val path = Environment.getDataDirectory()
         val stat = android.os.StatFs(path.path)
@@ -100,34 +127,12 @@ class MainActivity : FlutterActivity() {
         return telephonyManager.simState
     }
 
-
-    private fun getUiMode(): String {
-        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        return when (uiModeManager.currentModeType) {
-            UiModeManager.MODE_NIGHT_NO -> "UI_MODE_TYPE_NORMAL"
-            UiModeManager.MODE_NIGHT_YES -> "UI_MODE_TYPE_CAR"
-            UiModeManager.MODE_NIGHT_AUTO -> "UI_MODE_TYPE_TELEVISION"
-            UiModeManager.MODE_NIGHT_CUSTOM -> "UI_MODE_TYPE_APPLIANCE"
-            UiModeManager.MODE_NIGHT_UNDEFINED -> "UI_MODE_TYPE_WATCH"
-            else -> "UNKNOWN"
-        }
-    }
-
-    private fun isMockLocationEnabled(): Int {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val providers = locationManager.allProviders
-        return if (providers.contains(LocationManager.GPS_PROVIDER) || providers.contains(LocationManager.NETWORK_PROVIDER)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (locationManager.isProviderMock(LocationManager.GPS_PROVIDER) || locationManager.isProviderMock(LocationManager.NETWORK_PROVIDER)) {
-                    1
-                } else {
-                    0
-                }
-            } else {
-                android.provider.Settings.Secure.getString(contentResolver, android.provider.Settings.Secure.ALLOW_MOCK_LOCATION) != "0"
-            }
+    private fun getCpuType(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Build.SUPPORTED_ABIS.joinToString(", ")
         } else {
-            0
+            @Suppress("DEPRECATION")
+            Build.CPU_ABI
         }
     }
 }

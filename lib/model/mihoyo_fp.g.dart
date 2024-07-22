@@ -28,6 +28,7 @@ DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => DeviceInfo(
       ramRemain: json['ramRemain'] as String,
       appUpdateTimeDiff: (json['appUpdateTimeDiff'] as num).toInt(),
       deviceInfo: json['deviceInfo'] as String,
+      vaid: json['vaid'] as String,
       buildType: json['buildType'] as String,
       sdkVersion: json['sdkVersion'] as String,
       uiMode: json['uiMode'] as String,
@@ -82,6 +83,7 @@ Map<String, dynamic> _$DeviceInfoToJson(DeviceInfo instance) =>
       'ramRemain': instance.ramRemain,
       'appUpdateTimeDiff': instance.appUpdateTimeDiff,
       'deviceInfo': instance.deviceInfo,
+      'vaid': instance.vaid,
       'buildType': instance.buildType,
       'sdkVersion': instance.sdkVersion,
       'uiMode': instance.uiMode,
@@ -121,6 +123,7 @@ FpBody _$FpBodyFromJson(Map<String, dynamic> json) => FpBody(
       device_fp: json['device_fp'] as String,
       app_name: json['app_name'] as String,
       ext_fields: json['ext_fields'] as String,
+      bbs_device_id: json['bbs_device_id'] as String,
     );
 
 Map<String, dynamic> _$FpBodyToJson(FpBody instance) => <String, dynamic>{
@@ -131,4 +134,5 @@ Map<String, dynamic> _$FpBodyToJson(FpBody instance) => <String, dynamic>{
       'device_fp': instance.device_fp,
       'app_name': instance.app_name,
       'ext_fields': instance.ext_fields,
+      'bbs_device_id': instance.bbs_device_id,
     };

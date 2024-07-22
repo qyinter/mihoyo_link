@@ -25,6 +25,7 @@ class DeviceInfo {
   final String ramRemain;
   final int appUpdateTimeDiff;
   final String deviceInfo;
+  final String vaid;
   final String buildType;
   final String sdkVersion;
   final String uiMode;
@@ -77,6 +78,7 @@ class DeviceInfo {
     required this.ramRemain,
     required this.appUpdateTimeDiff,
     required this.deviceInfo,
+    required this.vaid,
     required this.buildType,
     required this.sdkVersion,
     required this.uiMode,
@@ -121,6 +123,7 @@ class FpBody {
   final String device_fp;
   final String app_name;
   final String ext_fields;
+  final String bbs_device_id;
 
   FpBody({
     required this.device_id,
@@ -130,6 +133,7 @@ class FpBody {
     required this.device_fp,
     required this.app_name,
     required this.ext_fields,
+    required this.bbs_device_id,
   });
 
   factory FpBody.fromJson(Map<String, dynamic> json) => _$FpBodyFromJson(json);
