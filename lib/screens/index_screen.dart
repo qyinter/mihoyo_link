@@ -249,24 +249,31 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                         // Handle button press
                                         final miHoYoUtils = MiHoYoUtils();
                                         BrnLoadingDialog.show(context);
-                                        final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
+
+                                        final characterInfo =
+                                            await miHoYoUtils.getCharacterInfoById(gameRole, role, 1111);
                                         if (characterInfo != null) {
-                                          /// TODO: 直接大批量插入
-                                          for (var character in characterInfo.avatar_list) {
-                                            print(character.toJson());
-                                          }
-                                        } else {
-                                          BrnToast.show(
-                                            "获取出错了,如果一直出错请重新登录!",
-                                            context,
-                                            preIcon: Image.asset(
-                                              "assets/images/icon_toast_success.png",
-                                              width: 24,
-                                              height: 24,
-                                            ),
-                                            duration: const Duration(seconds: 2),
-                                          );
+                                          print(characterInfo.toString());
                                         }
+
+                                        // final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
+                                        // if (characterInfo != null) {
+                                        //   /// TODO: 直接大批量插入
+                                        //   for (var character in characterInfo.avatar_list) {
+                                        //     print(character.toJson());
+                                        //   }
+                                        // } else {
+                                        //   BrnToast.show(
+                                        //     "获取出错了,如果一直出错请重新登录!",
+                                        //     context,
+                                        //     preIcon: Image.asset(
+                                        //       "assets/images/icon_toast_success.png",
+                                        //       width: 24,
+                                        //       height: 24,
+                                        //     ),
+                                        //     duration: const Duration(seconds: 2),
+                                        //   );
+                                        // }
                                       },
                                       child: const Text('提交展柜数据'),
                                     )

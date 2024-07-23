@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
+import 'package:yuanmo_link/model/mihoyo_fp.dart';
 import 'package:yuanmo_link/routes/route_generator.dart';
 import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_exception.dart';
@@ -17,7 +19,15 @@ void main() {
     try {
       utils.getAndroidFp();
     } catch (e) {
-      Global.saveDeviceFp(utils.generateCustomId());
+      Global.saveFpInfo(
+        FpInfo(
+            deviceFp: utils.generateCustomId(),
+            bbsDeviceId: const Uuid().v4(),
+            sysVsersion: "12",
+            deviceName: "%E5%B0%8F%E7%B1%B3%E6%89%8B%E6%9C%BA",
+            deviceModel: "MI 14",
+            brand: "Xiaomi"),
+      );
     }
 
     await Global.init();

@@ -167,3 +167,43 @@ class FpResult {
     };
   }
 }
+
+class FpInfo {
+  final String deviceFp;
+  final String bbsDeviceId;
+  final String sysVsersion;
+  final String deviceName;
+  final String deviceModel;
+  final String brand;
+
+  FpInfo({
+    required this.deviceFp,
+    required this.bbsDeviceId,
+    required this.sysVsersion,
+    required this.deviceName,
+    required this.deviceModel,
+    required this.brand,
+  });
+
+  factory FpInfo.fromJson(Map<String, dynamic> json) {
+    return FpInfo(
+      deviceFp: json['deviceFp'],
+      bbsDeviceId: json['bbsDeviceId'],
+      sysVsersion: json['sysVsersion'],
+      deviceName: json['deviceName'],
+      deviceModel: json['deviceModel'],
+      brand: json['brand'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'deviceFp': deviceFp,
+      'bbsDeviceId': bbsDeviceId,
+      'sysVsersion': sysVsersion,
+      'deviceName': deviceName,
+      'deviceModel': deviceModel,
+      'brand': brand,
+    };
+  }
+}

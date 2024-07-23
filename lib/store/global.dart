@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/model/mihoyo_user_info.dart';
+import 'package:yuanmo_link/model/mihoyo_fp.dart';
 
 class Global {
   static late SharedPreferences _prefs;
@@ -27,9 +26,9 @@ class Global {
   static String miyousheAcount = ""; // 米游社账号
   static String mid = ""; //  mihoyo id
   static String mihoyoCookie = ""; // 米哈游cookie
-  static String userFp = ""; // 用户设备信息
-  static String deviceFp = ""; // 设备信息
-  static String bbsDeviceId = ""; // bbs设备id
+
+  static FpInfo fpInfo =
+      FpInfo(deviceFp: "", bbsDeviceId: "", sysVsersion: "", deviceName: "", deviceModel: "", brand: ""); // 设备信息
 
   static UserInfo? userInfo; // 用户信息
 
@@ -67,14 +66,9 @@ class Global {
       userInfo = UserInfo.fromJson(jsonDecode(userInfo_));
     }
 
-    var deviceFp_ = _prefs.getString("deviceFp");
-    if (deviceFp_ != null) {
-      deviceFp = deviceFp_;
-    }
-
-    var bbsDeviceId_ = _prefs.getString("bbsDeviceId");
-    if (bbsDeviceId_ != null) {
-      bbsDeviceId = bbsDeviceId_;
+    var fpInfo_ = _prefs.getString("fpInfo");
+    if (fpInfo_ != null) {
+      fpInfo = FpInfo.fromJson(jsonDecode(fpInfo_));
     }
   }
 
@@ -94,8 +88,11 @@ class Global {
     await _prefs.setString("gamelist", jsonString);
   }
 
-  static saveDeviceFp(s) => {deviceFp = s, _prefs.setString("deviceFp", deviceFp)};
-  static saveBbsDeviceId(s) => {bbsDeviceId = s, _prefs.setString("bbsDeviceId", bbsDeviceId)};
+  // 持久化缓存设备信息
+  static saveFpInfo(FpInfo info) async {
+    fpInfo = info;
+    await _prefs.setString("fpInfo", jsonEncode(info.toJson()));
+  }
 
   // 加载缓存的所有游戏的角色数据信息
   static List<GameRoleInfo> loadGameRoleList() {

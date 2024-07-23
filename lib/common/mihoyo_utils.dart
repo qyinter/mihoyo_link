@@ -7,7 +7,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_udid/flutter_udid.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/api_utils.dart';
@@ -19,6 +18,7 @@ import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/model/mihoyo_token.dart';
 import 'package:yuanmo_link/model/mihoyo_user_info.dart';
 import 'package:yuanmo_link/model/mihoyo_qrcode.dart';
+import 'package:yuanmo_link/model/mihoyo_zzz_%20avatar_info.dart';
 import 'package:yuanmo_link/model/mihoyo_zzz_%20avatar_list.dart';
 import 'package:yuanmo_link/store/global.dart';
 
@@ -159,15 +159,16 @@ CgGs52bFoYMtyi+xEQIDAQAB
     var uuid = const Uuid().v4();
     var bbs_device_id = const Uuid().v4();
 
+    String brand = brandMapping[androidInfo.brand] ?? '未知品牌';
     final fpBody = FpBody(
       device_id: androidIdMap?['androidId'] ?? const Uuid().v4(),
       seed_id: uuid,
       seed_time: "${DateTime.now().millisecondsSinceEpoch}",
       platform: "2",
-      device_fp: "0331573827",
+      device_fp: Global.fpInfo.deviceFp != "" ? Global.fpInfo.deviceFp : "0331573827",
       app_name: "bbs_cn",
       ext_fields:
-          "{\"proxyStatus\":0,\"isRoot\":0,\"romCapacity\":\"512\",\"deviceName\":\"${brandMapping[androidInfo.brand] ?? '未知手机'}\",\"productName\":\"${androidInfo.device}\",\"romRemain\":\"497\",\"hostname\":\"$hostName\",\"screenSize\":\"$screenSize\",\"isTablet\":0,\"aaid\":\"error_1008003\",\"model\":\"${androidInfo.model}\",\"brand\":\"${androidInfo.brand}\",\"hardware\":\"${androidInfo.hardware}\",\"deviceType\":\"${androidInfo.device}\",\"devId\":\"REL\",\"serialNumber\":\"unknown\",\"sdCapacity\":$sdCapacity,\"buildTime\":\"$buildTime\",\"buildUser\":\"$buildUser\",\"simState\":$simState,\"ramRemain\":\"$ramRemain\",\"appUpdateTimeDiff\":1721572819246,\"deviceInfo\":\"${androidInfo.brand}\\/${androidInfo.device}\\/${androidInfo.device}:${androidInfo.version.release}\\/${androidInfo.display}\\/${androidInfo.version.incremental}:$buildType\\/$buildTags\",\"vaid\":\"error_1008003\",\"buildType\":\"$buildType\",\"sdkVersion\":\"${androidInfo.version.sdkInt}\",\"ui_mode\":\"UI_MODE_TYPE_NORMAL\",\"isMockLocation\":0,\"cpuType\":\"$cpuType\",\"isAirMode\":0,\"ringMode\":1,\"chargeStatus\":3,\"manufacturer\":\"$manufacturer\",\"emulatorStatus\":0,\"appMemory\":\"512\",\"osVersion\":\"${androidInfo.version.release}\",\"vendor\":\"unknown\",\"accelerometer\":\"1.1918782x4.003556x8.735291\",\"sdRemain\":$ramRemain,\"buildTags\":\"$buildTags\",\"packageName\":\"com.mihoyo.hyperion\",\"networkType\":\"WiFi\",\"oaid\":\"${oaidMap?['oaid'] ?? 'unknown'}\",\"debugStatus\":1,\"ramCapacity\":\"$sdCapacity\",\"magnetometer\":\"-60.929684x-44.194122x42.59439\",\"display\":\"${androidInfo.display}\",\"appInstallTimeDiff\":1721572819246,\"packageVersion\":\"2.20.2\",\"gyroscope\":\"-0.0023837525x0.08423652x0.005653145\",\"batteryStatus\":79,\"hasKeyboard\":0,\"board\":\"${androidInfo.board}\"}",
+          "{\"proxyStatus\":0,\"isRoot\":0,\"romCapacity\":\"512\",\"deviceName\":\"$brand\",\"productName\":\"${androidInfo.device}\",\"romRemain\":\"497\",\"hostname\":\"$hostName\",\"screenSize\":\"$screenSize\",\"isTablet\":0,\"aaid\":\"error_1008003\",\"model\":\"${androidInfo.model}\",\"brand\":\"${androidInfo.brand}\",\"hardware\":\"${androidInfo.hardware}\",\"deviceType\":\"${androidInfo.device}\",\"devId\":\"REL\",\"serialNumber\":\"unknown\",\"sdCapacity\":$sdCapacity,\"buildTime\":\"$buildTime\",\"buildUser\":\"$buildUser\",\"simState\":$simState,\"ramRemain\":\"$ramRemain\",\"appUpdateTimeDiff\":1721572819246,\"deviceInfo\":\"${androidInfo.brand}\\/${androidInfo.device}\\/${androidInfo.device}:${androidInfo.version.release}\\/${androidInfo.display}\\/${androidInfo.version.incremental}:$buildType\\/$buildTags\",\"vaid\":\"error_1008003\",\"buildType\":\"$buildType\",\"sdkVersion\":\"${androidInfo.version.sdkInt}\",\"ui_mode\":\"UI_MODE_TYPE_NORMAL\",\"isMockLocation\":0,\"cpuType\":\"$cpuType\",\"isAirMode\":0,\"ringMode\":1,\"chargeStatus\":3,\"manufacturer\":\"$manufacturer\",\"emulatorStatus\":0,\"appMemory\":\"512\",\"osVersion\":\"${androidInfo.version.release}\",\"vendor\":\"unknown\",\"accelerometer\":\"1.1918782x4.003556x8.735291\",\"sdRemain\":$ramRemain,\"buildTags\":\"$buildTags\",\"packageName\":\"com.mihoyo.hyperion\",\"networkType\":\"WiFi\",\"oaid\":\"${oaidMap?['oaid'] ?? 'unknown'}\",\"debugStatus\":1,\"ramCapacity\":\"$sdCapacity\",\"magnetometer\":\"-60.929684x-44.194122x42.59439\",\"display\":\"${androidInfo.display}\",\"appInstallTimeDiff\":1721572819246,\"packageVersion\":\"2.20.2\",\"gyroscope\":\"-0.0023837525x0.08423652x0.005653145\",\"batteryStatus\":79,\"hasKeyboard\":0,\"board\":\"${androidInfo.board}\"}",
       bbs_device_id: "${deviceIdMap?['deviceId'] ?? bbs_device_id}",
     );
 
@@ -184,15 +185,37 @@ CgGs52bFoYMtyi+xEQIDAQAB
         (json) => FpResult.fromJson(json),
       );
       if (resp.retcode == 0 && resp.data != null) {
-        Global.saveBbsDeviceId(deviceIdMap?['deviceId'] ?? bbs_device_id);
-        Global.saveDeviceFp(resp.data!.device_fp);
-        print("device_fp: ${Global.deviceFp}");
-        print("bbs_device_id:  ${Global.bbsDeviceId}");
+        final info = FpInfo(
+          deviceFp: resp.data!.device_fp,
+          bbsDeviceId: deviceIdMap?['deviceId'] ?? bbs_device_id,
+          sysVsersion: androidInfo.version.release,
+          deviceName: Uri.encodeComponent(brand),
+          deviceModel: androidInfo.model,
+          brand: androidInfo.brand,
+        );
+        print(info.toJson());
+        Global.saveFpInfo(info);
       } else {
-        Global.saveDeviceFp(generateCustomId());
+        Global.saveFpInfo(
+          FpInfo(
+              deviceFp: generateCustomId(),
+              bbsDeviceId: const Uuid().v4(),
+              sysVsersion: "12",
+              deviceName: "%E5%B0%8F%E7%B1%B3%E6%89%8B%E6%9C%BA",
+              deviceModel: "MI 14",
+              brand: "Xiaomi"),
+        );
       }
     } else {
-      Global.saveDeviceFp(generateCustomId());
+      Global.saveFpInfo(
+        FpInfo(
+            deviceFp: generateCustomId(),
+            bbsDeviceId: const Uuid().v4(),
+            sysVsersion: "12",
+            deviceName: "%E5%B0%8F%E7%B1%B3%E6%89%8B%E6%9C%BA",
+            deviceModel: "MI 14",
+            brand: "Xiaomi"),
+      );
     }
   }
 
@@ -296,7 +319,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
           "Cookie": cookie,
           "x-rpc-client_type": "5",
           "x-rpc-app_version": "2.71.1",
-          "x-rpc-device_id": Global.bbsDeviceId,
+          "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
           "DS": getDs()
         },
       ),
@@ -330,7 +353,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
             "Cookie": cookie,
             "x-rpc-client_type": "5",
             "x-rpc-app_version": "2.71.1",
-            "x-rpc-device_id": Global.bbsDeviceId,
+            "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
             "DS": getDs()
           },
         ),
@@ -372,7 +395,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
           "Cookie": Global.mihoyoCookie,
           "x-rpc-client_type": "5",
           "x-rpc-app_version": "2.71.1",
-          "x-rpc-device_id": Global.bbsDeviceId,
+          "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
           "DS": getDs()
         },
       ),
@@ -408,7 +431,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
       options: Options(
         headers: {
           "Content-Type": "application/json;charset=utf-8",
-          "x-rpc-device_id": Global.bbsDeviceId,
+          "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
         },
       ),
     );
@@ -435,7 +458,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
       options: Options(
         headers: {
           "Content-Type": "application/json;charset=utf-8",
-          "x-rpc-device_id": Global.bbsDeviceId,
+          "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
         },
       ),
     );
@@ -468,9 +491,9 @@ CgGs52bFoYMtyi+xEQIDAQAB
       "x-rpc-app_version": "2.71.1",
       "DS": getDs(),
       "x-rpc-client_type": "1",
-      "x-rpc-device_id": Global.bbsDeviceId,
+      "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
       "x-rpc-sdk_version": "2.20.1",
-      "x-rpc-sys_version": "17.5.1",
+      "x-rpc-sys_version": Global.fpInfo.sysVsersion,
       "x-rpc-game_biz": "bbs_cn"
     };
 
@@ -514,16 +537,17 @@ CgGs52bFoYMtyi+xEQIDAQAB
     final headers = {
       "Host": "passport-api.mihoyo.com",
       "Content-Type": "application/json",
-      "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
       "x-rpc-account_version": "2.20.1",
       "x-rpc-app_id": "bll8iq97cem8",
-      "x-rpc-device_fp": Global.deviceFp,
+      "x-rpc-device_fp": Global.fpInfo.deviceFp,
       "x-rpc-app_version": "2.71.1",
       "DS": getDs(),
       "x-rpc-client_type": "1",
-      "x-rpc-device_id": Global.bbsDeviceId,
+      "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
       "x-rpc-sdk_version": "2.20.1",
-      "x-rpc-sys_version": "17.5.1",
+      "x-rpc-sys_version": Global.fpInfo.sysVsersion,
+      'x-rpc-device_name': Global.fpInfo.deviceName,
+      'x-rpc-device_model': Global.fpInfo.deviceModel,
       "x-rpc-game_biz": "bbs_cn"
     };
 
@@ -581,13 +605,13 @@ CgGs52bFoYMtyi+xEQIDAQAB
           "User-Agent": "Hyperion/453 CFNetwork/1496.0.7 Darwin/23.5.0",
           "x-rpc-account_version": "2.20.1",
           "x-rpc-app_id": "bll8iq97cem8",
-          "x-rpc-device_fp": Global.deviceFp,
+          "x-rpc-device_fp": Global.fpInfo.deviceFp,
           "x-rpc-app_version": "2.71.1",
           "DS": getDs(),
           "x-rpc-client_type": "1",
-          "x-rpc-device_id": Global.bbsDeviceId,
+          "x-rpc-device_id": Global.fpInfo.bbsDeviceId,
           "x-rpc-sdk_version": "2.20.1",
-          "x-rpc-sys_version": "17.5.1",
+          "x-rpc-sys_version": Global.fpInfo.sysVsersion,
           "x-rpc-game_biz": "bbs_cn"
         },
       ),
@@ -615,25 +639,19 @@ CgGs52bFoYMtyi+xEQIDAQAB
       options: Options(
         headers: {
           'Host': 'api-takumi-record.mihoyo.com',
-          'Connection': 'keep-alive',
           'x-rpc-platform': '2',
           'Origin': 'https://act.mihoyo.com',
           'x-rpc-geetest_ext': '{"viewUid":"0","gameId":8,"page":"v1.0.20_#/zzz/roles/all","isHost":1}',
           'x-rpc-app_version': '2.73.1',
           'x-rpc-language': 'zh-cn',
-          'User-Agent':
-              'Mozilla/5.0 (Linux; Android 9; MI 9 Build/PKQ1.181121.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.136 Mobile Safari/537.36 miHoYoBBS/2.73.1',
-          'x-rpc-device_id': Global.bbsDeviceId,
-          'Accept': 'application/json, text/plain, */*',
-          'x-rpc-device_name': 'Xiaomi MI 9',
+          'x-rpc-device_id': Global.fpInfo.bbsDeviceId,
+          'x-rpc-device_name': "${Global.fpInfo.brand} ${Global.fpInfo.deviceModel}",
           'x-rpc-page': 'v1.0.20_#/zzz/roles/all',
-          "x-rpc-device_fp": Global.deviceFp,
+          "x-rpc-device_fp": Global.fpInfo.deviceFp,
           'x-rpc-lang': 'zh-cn',
-          'x-rpc-sys_version': '9',
+          'x-rpc-sys_version': Global.fpInfo.sysVsersion,
           'Referer':
               'https://act.mihoyo.com/app/mihoyo-zzz-game-record/m.html?mhy_presentation_style=fullscreen&bbs_auth_required=true&game_id%5B0%5D=8&game_id%5B1%5D=8&user_id=${Global.miyousheAcount}&uid=${Global.miyousheAcount}',
-          'Accept-Encoding': 'gzip, deflate',
-          'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
           "Cookie": Global.mihoyoCookie,
           "X-Requested-With": "com.mihoyo.hyperion"
         },
@@ -646,6 +664,46 @@ CgGs52bFoYMtyi+xEQIDAQAB
       );
       if (resp.retcode == 0) {
         return resp.data;
+      } else {
+        throw Exception("Failed to check scan status: ${resp.retcode}");
+      }
+    } else {
+      throw Exception("Failed to check scan status");
+    }
+  }
+
+  /// 获取所有角色基本信息
+  Future<Object?> getCharacterInfoById(MihoyoGameRole role, GameRoleInfo info, int id) async {
+    final Response result = await _dio.get(
+      "https://api-takumi-record.mihoyo.com/event/game_record_zzz/api/zzz/avatar/info?id_list[]=$id&need_wiki=true&server=${role.region}&role_id=${role.gameUid}",
+      options: Options(
+        headers: {
+          'Host': 'api-takumi-record.mihoyo.com',
+          'x-rpc-platform': '2',
+          'Origin': 'https://act.mihoyo.com',
+          'x-rpc-geetest_ext': '{"viewUid":"0","gameId":8,"page":"v1.0.20_#/zzz/roles/all","isHost":1}',
+          'x-rpc-app_version': '2.73.1',
+          'x-rpc-language': 'zh-cn',
+          'x-rpc-device_id': Global.fpInfo.bbsDeviceId,
+          'x-rpc-device_name': "${Global.fpInfo.brand} ${Global.fpInfo.deviceModel}",
+          'x-rpc-page': 'v1.0.20_#/zzz/roles/all',
+          "x-rpc-device_fp": Global.fpInfo.deviceFp,
+          'x-rpc-lang': 'zh-cn',
+          'x-rpc-sys_version': Global.fpInfo.sysVsersion,
+          'Referer':
+              'https://act.mihoyo.com/app/mihoyo-zzz-game-record/m.html?mhy_presentation_style=fullscreen&bbs_auth_required=true&game_id%5B0%5D=8&game_id%5B1%5D=8&user_id=${Global.miyousheAcount}&uid=${Global.miyousheAcount}',
+          "Cookie": Global.mihoyoCookie,
+          "X-Requested-With": "com.mihoyo.hyperion"
+        },
+      ),
+    );
+    if (result.statusCode == 200) {
+      final MihoyoResult<AvatarModel> resp = MihoyoResult<AvatarModel>.fromJson(
+        result.data,
+        (json) => AvatarModel.fromJson(json),
+      );
+      if (resp.retcode == 0 && resp.data!.avatarList.isNotEmpty) {
+        return resp.data!.avatarList[0];
       } else {
         throw Exception("Failed to check scan status: ${resp.retcode}");
       }
