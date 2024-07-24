@@ -5,10 +5,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_xupdate/flutter_xupdate.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/api_utils.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/components/password.dart';
-import 'package:yuanmo_link/components/qr_code.dart';
+import 'package:yuanmo_link/model/mihoyo_fp.dart';
 import 'package:yuanmo_link/model/mihoyo_zzz_%20avatar_info.dart';
 import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_store.dart';
@@ -48,8 +49,30 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
       if (apiUrl != null) {
         FlutterXUpdate.checkUpdate(url: "$apiUrl/api/app_version");
       }
+      _initializeData();
     });
     _tabController = TabController(length: _tabs.length, vsync: this);
+  }
+
+  Future<void> _initializeData() async {
+    BrnLoadingDialog.show(context, content: "初始化设备信息中...");
+    final utils = MiHoYoUtils();
+    try {
+      await utils.getAndroidFp();
+      BrnLoadingDialog.dismiss(context);
+    } catch (e) {
+      Global.saveFpInfo(
+        FpInfo(
+          deviceFp: utils.generateCustomId(),
+          bbsDeviceId: const Uuid().v4(),
+          sysVsersion: "12",
+          deviceName: "%E5%B0%8F%E7%B1%B3%E6%89%8B%E6%9C%BA",
+          deviceModel: "MI 14",
+          brand: "Xiaomi",
+        ),
+      );
+      BrnLoadingDialog.dismiss(context);
+    }
   }
 
   @override
@@ -192,7 +215,6 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                         BrnLoadingDialog.dismiss(context);
 
                                         String? APP_NAME = "";
-
                                         String? APP_ID = "";
                                         String? JAPP_PATH = "";
                                         if (role.gameName == "原神") {
@@ -252,39 +274,65 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                       },
                                       child: const Text('获取抽卡链接'),
                                     ),
-                                    OutlinedButton(
-                                      onPressed: () async {
-                                        // Handle button press
-                                        final miHoYoUtils = MiHoYoUtils();
-                                        BrnLoadingDialog.show(context);
+                                    role.gameName == "绝区零"
+                                        ? OutlinedButton(
+                                            onPressed: () async {
+                                              // Handle button press
+                                              final miHoYoUtils = MiHoYoUtils();
+                                              BrnLoadingDialog.show(context, content: "获取展柜数据中...请稍等...");
 
-                                        final apiUtil = ApiUtils();
-                                        final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
-                                        if (characterInfo != null) {
-                                          List<Character> newBody = [];
-                                          for (var character in characterInfo.avatar_list) {
-                                            final detial =
-                                                await miHoYoUtils.getCharacterInfoById(gameRole, role, character.id);
-                                            if (detial != null) {
-                                              newBody.add(detial);
-                                            }
-                                          }
-                                          await apiUtil.setAvatarInfoData(newBody);
-                                        } else {
-                                          BrnToast.show(
-                                            "获取出错了,如果一直出错请重新登录!",
-                                            context,
-                                            preIcon: Image.asset(
-                                              "assets/images/icon_toast_success.png",
-                                              width: 24,
-                                              height: 24,
-                                            ),
-                                            duration: const Duration(seconds: 2),
-                                          );
-                                        }
-                                      },
-                                      child: const Text('提交展柜数据'),
-                                    )
+                                              final apiUtil = ApiUtils();
+                                              final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
+                                              if (characterInfo != null) {
+                                                List<Character> newBody = [];
+                                                for (var character in characterInfo.avatar_list) {
+                                                  final detial = await miHoYoUtils.getCharacterInfoById(
+                                                      gameRole, role, character.id);
+                                                  if (detial != null) {
+                                                    newBody.add(detial);
+                                                  }
+                                                }
+                                                final setFlag = await apiUtil.setAvatarInfoData(newBody);
+                                                if (setFlag != null && setFlag) {
+                                                  BrnLoadingDialog.dismiss(context);
+                                                  BrnToast.show(
+                                                    "更新成功,去《绳网小助手》查看角色展柜吧!",
+                                                    context,
+                                                    preIcon: Image.asset(
+                                                      "assets/images/icon_toast_success.png",
+                                                      width: 24,
+                                                      height: 24,
+                                                    ),
+                                                    duration: const Duration(seconds: 2),
+                                                  );
+                                                } else {
+                                                  BrnToast.show(
+                                                    "获取出错了,如果一直出错请重新登录!",
+                                                    context,
+                                                    preIcon: Image.asset(
+                                                      "assets/images/icon_toast_success.png",
+                                                      width: 24,
+                                                      height: 24,
+                                                    ),
+                                                    duration: const Duration(seconds: 2),
+                                                  );
+                                                }
+                                              } else {
+                                                BrnToast.show(
+                                                  "获取出错了,如果一直出错请重新登录!",
+                                                  context,
+                                                  preIcon: Image.asset(
+                                                    "assets/images/icon_toast_success.png",
+                                                    width: 24,
+                                                    height: 24,
+                                                  ),
+                                                  duration: const Duration(seconds: 2),
+                                                );
+                                              }
+                                            },
+                                            child: const Text('提交展柜数据'),
+                                          )
+                                        : Container(),
                                   ],
                                 )
                               ],

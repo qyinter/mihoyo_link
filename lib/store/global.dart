@@ -81,7 +81,7 @@ class Global {
       FlutterXUpdate.init(
 
               ///是否输出日志
-              debug: true,
+              debug: false,
 
               ///是否使用post请求
               isPost: false,
@@ -103,14 +103,8 @@ class Global {
 
               ///在下载过程中，如果点击了取消的话，是否弹出切换下载方式的重试提示弹窗
               enableRetry: false)
-          .then((value) {
-        print("初始化成功");
-      }).catchError((error) {
-        print(error);
-      });
-      FlutterXUpdate.setErrorHandler(onUpdateError: (Map<String, dynamic>? message) async {
-        print(message);
-      });
+          .then((value) {})
+          .catchError((error) {});
     }
   }
 

@@ -480,7 +480,6 @@ CgGs52bFoYMtyi+xEQIDAQAB
 
   /// 发送验证码 客户端
   Future<MmtResult?> sendPhoneByMiyoushe(String phone, String? rpcAigis) async {
-    final uuid = const Uuid().v4();
     final headers = {
       "Host": "passport-api.mihoyo.com",
       "Content-Type": "application/json",
@@ -496,10 +495,12 @@ CgGs52bFoYMtyi+xEQIDAQAB
       "x-rpc-sys_version": Global.fpInfo.sysVsersion,
       "x-rpc-game_biz": "bbs_cn"
     };
-
     if (rpcAigis != null) {
       headers["X-Rpc-Aigis"] = rpcAigis;
     }
+
+    print(headers);
+    print(rpcAigis);
 
     final Response result = await _dio.post(
       "https://passport-api.miyoushe.com/account/ma-cn-verifier/verifier/createLoginCaptcha",
@@ -581,7 +582,8 @@ CgGs52bFoYMtyi+xEQIDAQAB
         }
       }
     } else {
-      throw Exception("Failed to check scan status");
+      map.isOk = false;
+      map.message = "登录失败";
     }
     return map;
   }

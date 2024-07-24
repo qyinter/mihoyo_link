@@ -188,11 +188,11 @@ class _PasswordState extends State<Password> {
                                       captchaOutput: result["captcha_output"],
                                       passToken: result["pass_token"],
                                       lotNumber: result["lot_number"]);
-                                  var content = utf8.encode(value.toJson().toString());
+                                  var content = utf8.encode(jsonEncode(value.toJson()));
                                   var digest = base64Encode(content);
                                   final base64String = digest.toString();
                                   final result2 = await mihoyoUril.sendPhoneByMiyoushe(
-                                      phoneController.text, "${model.sessionId},$base64String");
+                                      phoneController.text, "${model.sessionId};$base64String");
 
                                   if (result2!.isOk) {
                                     BrnToast.show(
@@ -240,12 +240,12 @@ class _PasswordState extends State<Password> {
                                   geetestValidate: result["geetest_validate"],
                                   geetestChallenge: result["geetest_challenge"],
                                 );
-                                var content = utf8.encode(gt3Result.toJson().toString());
+                                var content = utf8.encode(jsonEncode(gt3Result.toJson()));
                                 var digest = base64Encode(content);
                                 final base64String = digest.toString();
 
                                 final result2 = await mihoyoUril.sendPhoneByMiyoushe(
-                                    phoneController.text, "${model.sessionId},$base64String");
+                                    phoneController.text, "${model.sessionId};$base64String");
 
                                 if (result2 != null) {
                                   BrnToast.show(
@@ -367,13 +367,15 @@ class _PasswordState extends State<Password> {
                       );
                       return;
                     }
+                    BrnLoadingDialog.show(context, content: "登录中请稍等...");
                     final miHoYoUtils = MiHoYoUtils();
                     final result =
                         await miHoYoUtils.loginByPassword(accountController.text, passwordController.text, null);
-
                     if (result != null && result.isOk) {
                       await initMihoyoData(result.userInfo!);
+                      BrnLoadingDialog.dismiss(context);
                     } else if (result!.mmtModel != null) {
+                      BrnLoadingDialog.dismiss(context);
                       // 判断是不是极速4验证
                       final model = result.mmtModel;
                       if (model!.data.useV4 != null && model.data.useV4!) {
@@ -394,11 +396,11 @@ class _PasswordState extends State<Password> {
                                     captchaOutput: result["captcha_output"],
                                     passToken: result["pass_token"],
                                     lotNumber: result["lot_number"]);
-                                var content = utf8.encode(value.toJson().toString());
+                                var content = utf8.encode(jsonEncode(value.toJson()));
                                 var digest = base64Encode(content);
                                 final base64String = digest.toString();
                                 final result2 = await miHoYoUtils.loginByPassword(accountController.text,
-                                    passwordController.text, "${model.sessionId},$base64String");
+                                    passwordController.text, "${model.sessionId};$base64String");
 
                                 if (result2 != null && result2.userInfo != null) {
                                   await initMihoyoData(result2.userInfo as MihoyoUserInfo);
@@ -407,7 +409,7 @@ class _PasswordState extends State<Password> {
                                     "登录失败, 请检查账号密码是否正确",
                                     context,
                                     preIcon: Image.asset(
-                                      "assets/images/icon_toast_success.png",
+                                      "assets/images/icon_toast_fail.png",
                                       width: 24,
                                       height: 24,
                                     ),
@@ -448,11 +450,12 @@ class _PasswordState extends State<Password> {
                                 geetestValidate: result["geetest_validate"],
                                 geetestChallenge: result["geetest_challenge"],
                               );
-                              var content = utf8.encode(gt3Result.toJson().toString());
+                              ;
+                              var content = utf8.encode(jsonEncode(gt3Result.toJson()));
                               var digest = base64Encode(content);
                               final base64String = digest.toString();
                               final result2 = await miHoYoUtils.loginByPassword(
-                                  accountController.text, passwordController.text, "${model.sessionId},$base64String");
+                                  accountController.text, passwordController.text, "${model.sessionId};$base64String");
                               if (result2 != null && result2.userInfo != null) {
                                 await initMihoyoData(result2.userInfo as MihoyoUserInfo);
                               } else {
@@ -460,7 +463,7 @@ class _PasswordState extends State<Password> {
                                   "登录失败, 请检查账号密码是否正确",
                                   context,
                                   preIcon: Image.asset(
-                                    "assets/images/icon_toast_success.png",
+                                    "assets/images/icon_toast_fail.png",
                                     width: 24,
                                     height: 24,
                                   ),
@@ -471,6 +474,18 @@ class _PasswordState extends State<Password> {
                           },
                         );
                       }
+                    } else {
+                      BrnLoadingDialog.dismiss(context);
+                      BrnToast.show(
+                        result.message,
+                        context,
+                        preIcon: Image.asset(
+                          "assets/images/icon_toast_fail.png",
+                          width: 24,
+                          height: 24,
+                        ),
+                        duration: const Duration(seconds: 2),
+                      );
                     }
                   },
                   child: const Text(
