@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_xupdate/flutter_xupdate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/model/mihoyo_user_info.dart';
@@ -39,6 +41,7 @@ class Global {
   static Future init() async {
     BrnInitializer.register();
     WidgetsFlutterBinding.ensureInitialized();
+    initXUpdate();
 
     _prefs = await SharedPreferences.getInstance();
     var stoken_ = _prefs.getString("stoken");
@@ -69,6 +72,45 @@ class Global {
     var fpInfo_ = _prefs.getString("fpInfo");
     if (fpInfo_ != null) {
       fpInfo = FpInfo.fromJson(jsonDecode(fpInfo_));
+    }
+  }
+
+  ///初始化
+  static void initXUpdate() {
+    if (Platform.isAndroid) {
+      FlutterXUpdate.init(
+
+              ///是否输出日志
+              debug: true,
+
+              ///是否使用post请求
+              isPost: false,
+
+              ///post请求是否是上传json
+              isPostJson: false,
+
+              ///请求响应超时时间
+              timeout: 25000,
+
+              ///是否开启自动模式
+              isWifiOnly: false,
+
+              ///是否开启自动模式
+              isAutoMode: false,
+
+              ///需要设置的公共参数
+              supportSilentInstall: false,
+
+              ///在下载过程中，如果点击了取消的话，是否弹出切换下载方式的重试提示弹窗
+              enableRetry: false)
+          .then((value) {
+        print("初始化成功");
+      }).catchError((error) {
+        print(error);
+      });
+      FlutterXUpdate.setErrorHandler(onUpdateError: (Map<String, dynamic>? message) async {
+        print(message);
+      });
     }
   }
 

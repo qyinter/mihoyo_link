@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_xupdate/flutter_xupdate.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
@@ -14,7 +16,6 @@ import 'package:yuanmo_link/store/global_store.dart';
 void main() {
   runZonedGuarded(() async {
     await dotenv.load(fileName: getEnvFileName());
-
     final utils = MiHoYoUtils();
     try {
       utils.getAndroidFp();

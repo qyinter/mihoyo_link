@@ -45,3 +45,39 @@ class ZZZAvatarInfo {
   factory ZZZAvatarInfo.fromJson(Map<String, dynamic> json) => _$ZZZAvatarInfoFromJson(json);
   Map<String, dynamic> toJson() => _$ZZZAvatarInfoToJson(this);
 }
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ZZZAvatarInfoModel {
+  int uid;
+  int characterId;
+  int level;
+  String nameMi18n;
+  String fullNameMi18n;
+  int elementType;
+  String campNameMi18n;
+  int avatarProfession;
+  String rarity;
+  String groupIconPath;
+  String hollowIconPath;
+  int rank;
+  bool isChosen;
+
+  ZZZAvatarInfoModel({
+    required this.uid,
+    required this.characterId,
+    required this.level,
+    required this.nameMi18n,
+    required this.fullNameMi18n,
+    required this.elementType,
+    required this.campNameMi18n,
+    required this.avatarProfession,
+    required this.rarity,
+    required this.groupIconPath,
+    required this.hollowIconPath,
+    required this.rank,
+    required this.isChosen,
+  });
+
+  factory ZZZAvatarInfoModel.fromJson(Map<String, dynamic> json) => _$ZZZAvatarInfoModelFromJson(json);
+  Map<String, dynamic> toJson() => _$ZZZAvatarInfoModelToJson(this);
+}

@@ -49,3 +49,37 @@ Map<String, dynamic> _$ZZZAvatarInfoToJson(ZZZAvatarInfo instance) =>
       'rank': instance.rank,
       'is_chosen': instance.isChosen,
     };
+
+ZZZAvatarInfoModel _$ZZZAvatarInfoModelFromJson(Map<String, dynamic> json) =>
+    ZZZAvatarInfoModel(
+      uid: (json['uid'] as num).toInt(),
+      characterId: (json['character_id'] as num).toInt(),
+      level: (json['level'] as num).toInt(),
+      nameMi18n: json['name_mi18n'] as String,
+      fullNameMi18n: json['full_name_mi18n'] as String,
+      elementType: (json['element_type'] as num).toInt(),
+      campNameMi18n: json['camp_name_mi18n'] as String,
+      avatarProfession: (json['avatar_profession'] as num).toInt(),
+      rarity: json['rarity'] as String,
+      groupIconPath: json['group_icon_path'] as String,
+      hollowIconPath: json['hollow_icon_path'] as String,
+      rank: (json['rank'] as num).toInt(),
+      isChosen: json['is_chosen'] as bool,
+    );
+
+Map<String, dynamic> _$ZZZAvatarInfoModelToJson(ZZZAvatarInfoModel instance) =>
+    <String, dynamic>{
+      'uid': instance.uid,
+      'character_id': instance.characterId,
+      'level': instance.level,
+      'name_mi18n': instance.nameMi18n,
+      'full_name_mi18n': instance.fullNameMi18n,
+      'element_type': instance.elementType,
+      'camp_name_mi18n': instance.campNameMi18n,
+      'avatar_profession': instance.avatarProfession,
+      'rarity': instance.rarity,
+      'group_icon_path': instance.groupIconPath,
+      'hollow_icon_path': instance.hollowIconPath,
+      'rank': instance.rank,
+      'is_chosen': instance.isChosen,
+    };

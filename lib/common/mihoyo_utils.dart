@@ -533,7 +533,6 @@ CgGs52bFoYMtyi+xEQIDAQAB
 
   /// 账号密码登录
   Future<MmtResult?> loginByPassword(String account, String password, String? rpcAigis) async {
-    final uuid = const Uuid().v4();
     final headers = {
       "Host": "passport-api.mihoyo.com",
       "Content-Type": "application/json",
@@ -673,7 +672,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
   }
 
   /// 获取所有角色基本信息
-  Future<Object?> getCharacterInfoById(MihoyoGameRole role, GameRoleInfo info, int id) async {
+  Future<Character?> getCharacterInfoById(MihoyoGameRole role, GameRoleInfo info, int id) async {
     final Response result = await _dio.get(
       "https://api-takumi-record.mihoyo.com/event/game_record_zzz/api/zzz/avatar/info?id_list[]=$id&need_wiki=true&server=${role.region}&role_id=${role.gameUid}",
       options: Options(
@@ -697,12 +696,14 @@ CgGs52bFoYMtyi+xEQIDAQAB
         },
       ),
     );
+
     if (result.statusCode == 200) {
       final MihoyoResult<AvatarModel> resp = MihoyoResult<AvatarModel>.fromJson(
         result.data,
         (json) => AvatarModel.fromJson(json),
       );
       if (resp.retcode == 0 && resp.data!.avatarList.isNotEmpty) {
+        resp.data!.avatarList[0].uid = int.parse(role.gameUid);
         return resp.data!.avatarList[0];
       } else {
         throw Exception("Failed to check scan status: ${resp.retcode}");

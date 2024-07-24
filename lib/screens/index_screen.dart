@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:bruno/bruno.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_xupdate/flutter_xupdate.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yuanmo_link/common/api_utils.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/components/password.dart';
 import 'package:yuanmo_link/components/qr_code.dart';
+import 'package:yuanmo_link/model/mihoyo_zzz_%20avatar_info.dart';
 import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_store.dart';
 
@@ -40,6 +43,11 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
     // 在构建完成后调用 Bottom Picker
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Global.userInfo == null) _showLoginPicker();
+      // 监听更新情况
+      String? apiUrl = dotenv.env['API_URL'];
+      if (apiUrl != null) {
+        FlutterXUpdate.checkUpdate(url: "$apiUrl/api/app_version");
+      }
     });
     _tabController = TabController(length: _tabs.length, vsync: this);
   }
@@ -250,30 +258,30 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                         final miHoYoUtils = MiHoYoUtils();
                                         BrnLoadingDialog.show(context);
 
-                                        final characterInfo =
-                                            await miHoYoUtils.getCharacterInfoById(gameRole, role, 1111);
+                                        final apiUtil = ApiUtils();
+                                        final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
                                         if (characterInfo != null) {
-                                          print(characterInfo.toString());
+                                          List<Character> newBody = [];
+                                          for (var character in characterInfo.avatar_list) {
+                                            final detial =
+                                                await miHoYoUtils.getCharacterInfoById(gameRole, role, character.id);
+                                            if (detial != null) {
+                                              newBody.add(detial);
+                                            }
+                                          }
+                                          await apiUtil.setAvatarInfoData(newBody);
+                                        } else {
+                                          BrnToast.show(
+                                            "获取出错了,如果一直出错请重新登录!",
+                                            context,
+                                            preIcon: Image.asset(
+                                              "assets/images/icon_toast_success.png",
+                                              width: 24,
+                                              height: 24,
+                                            ),
+                                            duration: const Duration(seconds: 2),
+                                          );
                                         }
-
-                                        // final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
-                                        // if (characterInfo != null) {
-                                        //   /// TODO: 直接大批量插入
-                                        //   for (var character in characterInfo.avatar_list) {
-                                        //     print(character.toJson());
-                                        //   }
-                                        // } else {
-                                        //   BrnToast.show(
-                                        //     "获取出错了,如果一直出错请重新登录!",
-                                        //     context,
-                                        //     preIcon: Image.asset(
-                                        //       "assets/images/icon_toast_success.png",
-                                        //       width: 24,
-                                        //       height: 24,
-                                        //     ),
-                                        //     duration: const Duration(seconds: 2),
-                                        //   );
-                                        // }
                                       },
                                       child: const Text('提交展柜数据'),
                                     )
