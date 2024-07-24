@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
@@ -130,17 +129,9 @@ class ApiUtils {
         return false;
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        print('请求URL: ${e.requestOptions.uri}');
-        print('请求头: ${e.requestOptions.headers}');
-        print('请求数据: ${e.requestOptions.data}');
-        print('响应状态码: ${e.response?.statusCode}');
-        print('响应数据: ${e.response?.data}');
-      } else {
-        print('请求错误: ${e.message}');
-      }
+      return false;
     } catch (e) {
-      print('其他错误: $e');
+      return false;
     }
   }
 
@@ -172,17 +163,9 @@ class ApiUtils {
         return false;
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        print('请求URL: ${e.requestOptions.uri}');
-        print('请求头: ${e.requestOptions.headers}');
-        print('请求数据: ${e.requestOptions.data}');
-        print('响应状态码: ${e.response?.statusCode}');
-        print('响应数据: ${e.response?.data}');
-      } else {
-        print('请求错误: ${e.message}');
-      }
+      return false;
     } catch (e) {
-      print('其他错误: $e');
+      return false;
     }
   }
 }
