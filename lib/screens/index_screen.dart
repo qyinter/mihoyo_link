@@ -50,6 +50,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
         FlutterXUpdate.checkUpdate(url: "$apiUrl/api/app_version");
       }
       _initializeData();
+      // print(Global.mihoyoCookie);
     });
     _tabController = TabController(length: _tabs.length, vsync: this);
   }
@@ -291,6 +292,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                                   if (detial != null) {
                                                     newBody.add(detial);
                                                   }
+                                                  await Future.delayed(Duration(milliseconds: 200));
                                                 }
                                                 final setFlag = await apiUtil.setAvatarInfoData(newBody);
                                                 if (setFlag != null && setFlag) {

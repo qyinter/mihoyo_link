@@ -11,7 +11,6 @@ import 'package:yuanmo_link/store/global_store.dart';
 void main() {
   runZonedGuarded(() async {
     await dotenv.load(fileName: getEnvFileName());
-
     await Global.init();
     runApp(
       MultiProvider(
