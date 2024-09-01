@@ -50,7 +50,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
         FlutterXUpdate.checkUpdate(url: "$apiUrl/api/app_version");
       }
       _initializeData();
-      // print(Global.mihoyoCookie);
+      print(Global.mihoyoCookie);
     });
     _tabController = TabController(length: _tabs.length, vsync: this);
   }
