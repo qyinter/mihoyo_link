@@ -6,7 +6,6 @@ import 'package:flutter_xupdate/flutter_xupdate.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
-import 'package:yuanmo_link/common/api_utils.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/components/password.dart';
 import 'package:yuanmo_link/model/mihoyo_fp.dart';
@@ -111,7 +110,7 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("$appTitle-米游Link"),
+          title: Text("$appTitle"),
         ),
         body: Consumer<GlobalChangeNotifier>(builder: (context, notifier, child) {
           return Column(children: [
@@ -120,8 +119,8 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
               color: Colors.blue[100],
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundImage: getIcon(),
+                  const CircleAvatar(
+                    backgroundImage: AssetImage("assets/images/logo.png"),
                     radius: 25,
                   ),
                   const SizedBox(width: 8),
@@ -214,54 +213,12 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                         }
 
                                         BrnLoadingDialog.dismiss(context);
-
-                                        String? APP_NAME = "";
-                                        String? APP_ID = "";
-                                        String? JAPP_PATH = "";
-                                        if (role.gameName == "原神") {
-                                          APP_ID = dotenv.env['YUANSHEN_APP_ID'];
-                                          JAPP_PATH = dotenv.env['YUANSHEN_APP_PATH'];
-                                          APP_NAME = dotenv.env['APP_NAME2'];
-                                        } else {
-                                          APP_ID = dotenv.env['JUEQU_APP_ID'];
-                                          JAPP_PATH = dotenv.env['JUEQU_APP_PATH'];
-                                          APP_NAME = dotenv.env['APP_NAME'];
-                                        }
-
-                                        if (APP_ID == null || APP_ID == "") {
-                                          // 复制到剪切板
-                                          Clipboard.setData(ClipboardData(text: wishUrl));
-                                          BrnDialogManager.showSingleButtonDialog(context,
-                                              title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!",
-                                              label: '复制', onTap: () async {
-                                            BrnToast.show(
-                                              "已复制到剪切板,快去$APP_NAME使用吧!",
-                                              context,
-                                              preIcon: Image.asset(
-                                                "assets/images/icon_toast_success.png",
-                                                width: 24,
-                                                height: 24,
-                                              ),
-                                              duration: const Duration(seconds: 2),
-                                            );
-                                            Navigator.pop(context);
-                                          });
-                                          return;
-                                        }
-                                        final String wechatUrl =
-                                            'weixin://dl/business/?appid=$APP_ID&path=$JAPP_PATH&query=key=$wishUrl&env_version=release';
-                                        var uri = Uri.parse(wechatUrl);
-                                        // 尝试打开微信小程序深层链接
-                                        if (await canLaunchUrl(uri)) {
-                                          launchUrl(uri, mode: LaunchMode.externalApplication);
-                                        }
                                         // 复制到剪切板
                                         Clipboard.setData(ClipboardData(text: wishUrl));
                                         BrnDialogManager.showSingleButtonDialog(context,
-                                            title: "专属抽卡链接获取成功《$wishUrl》,快去$APP_NAME使用吧!",
-                                            label: '复制', onTap: () async {
+                                            title: "专属抽卡链接获取成功,快去复制使用吧!", label: '复制', onTap: () async {
                                           BrnToast.show(
-                                            "已复制到剪切板,快去$APP_NAME使用吧!",
+                                            "已复制到剪切板,快去复制使用吧!",
                                             context,
                                             preIcon: Image.asset(
                                               "assets/images/icon_toast_success.png",
@@ -275,66 +232,6 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                                       },
                                       child: const Text('获取抽卡链接'),
                                     ),
-                                    role.gameName == "绝区零"
-                                        ? OutlinedButton(
-                                            onPressed: () async {
-                                              // Handle button press
-                                              final miHoYoUtils = MiHoYoUtils();
-                                              BrnLoadingDialog.show(context, content: "获取展柜数据中...请稍等...");
-
-                                              final apiUtil = ApiUtils();
-                                              final characterInfo = await miHoYoUtils.getCharacterInfo(gameRole, role);
-                                              if (characterInfo != null) {
-                                                List<Character> newBody = [];
-                                                for (var character in characterInfo.avatar_list) {
-                                                  final detial = await miHoYoUtils.getCharacterInfoById(
-                                                      gameRole, role, character.id);
-                                                  if (detial != null) {
-                                                    newBody.add(detial);
-                                                  }
-                                                  await Future.delayed(Duration(milliseconds: 200));
-                                                }
-                                                final setFlag = await apiUtil.setAvatarInfoData(newBody);
-                                                if (setFlag != null && setFlag) {
-                                                  BrnLoadingDialog.dismiss(context);
-                                                  BrnToast.show(
-                                                    "更新成功,去《绳网小助手》查看角色展柜吧!",
-                                                    context,
-                                                    preIcon: Image.asset(
-                                                      "assets/images/icon_toast_success.png",
-                                                      width: 24,
-                                                      height: 24,
-                                                    ),
-                                                    duration: const Duration(seconds: 2),
-                                                  );
-                                                } else {
-                                                  BrnToast.show(
-                                                    "获取出错了,如果一直出错请重新登录!",
-                                                    context,
-                                                    preIcon: Image.asset(
-                                                      "assets/images/icon_toast_success.png",
-                                                      width: 24,
-                                                      height: 24,
-                                                    ),
-                                                    duration: const Duration(seconds: 2),
-                                                  );
-                                                }
-                                              } else {
-                                                BrnToast.show(
-                                                  "获取出错了,如果一直出错请重新登录!",
-                                                  context,
-                                                  preIcon: Image.asset(
-                                                    "assets/images/icon_toast_success.png",
-                                                    width: 24,
-                                                    height: 24,
-                                                  ),
-                                                  duration: const Duration(seconds: 2),
-                                                );
-                                              }
-                                            },
-                                            child: const Text('提交展柜数据'),
-                                          )
-                                        : Container(),
                                   ],
                                 )
                               ],
@@ -360,13 +257,5 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
       default:
         return Container();
     }
-  }
-
-  AssetImage getIcon() {
-    final APP_ICON = dotenv.env['APP_ICON'];
-    if (APP_ICON == null) {
-      return AssetImage("assets/images/logo.png");
-    }
-    return AssetImage("assets/images$APP_ICON");
   }
 }

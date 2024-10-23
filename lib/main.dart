@@ -31,11 +31,6 @@ String getEnvFileName() {
   switch (env) {
     case 'prod':
       return '.env.prod';
-    case 'zl':
-      return '.env.zl';
-    case 'zs':
-      return '.env.zs';
-    case 'dev':
     default:
       return '.env.dev';
   }

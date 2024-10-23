@@ -81,7 +81,7 @@ class Global {
       FlutterXUpdate.init(
 
               ///是否输出日志
-              debug: false,
+              debug: true,
 
               ///是否使用post请求
               isPost: false,
@@ -105,6 +105,9 @@ class Global {
               enableRetry: false)
           .then((value) {})
           .catchError((error) {});
+      FlutterXUpdate.setErrorHandler(onUpdateError: (Map<String, dynamic>? message) async {
+        print("FlutterXUpdate errror: $message");
+      });
     }
   }
 
