@@ -14,11 +14,15 @@ import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_store.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<StatefulWidget> createState() {
+    return _LoginScreenState();
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   late String data;
   bool isLoading = true;
   int _singleSelectedIndex = 0;
@@ -46,50 +50,151 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Row(
-            children: [
-              BrnRadioButton(
-                radioIndex: 0,
-                isSelected: _singleSelectedIndex == 0,
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 5),
-                  child: Text(
-                    "手机号验证登录",
+    return Material(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          children: [
+            // 顶部背景图区域
+            Container(
+              height: 220,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/login_header.jpg'), // 确保添加这个图片资源
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.only(left: 24, bottom: 10),
+                alignment: Alignment.bottomLeft,
+                child: const Text(
+                  "登录你的米游社账号", // 或其他标题文字
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                onValueChangedAtIndex: (index, value) {
-                  setState(() {
-                    _singleSelectedIndex = index;
-                  });
-                },
               ),
-              const SizedBox(
-                width: 20,
-              ),
-              BrnRadioButton(
-                radioIndex: 1,
-                isSelected: _singleSelectedIndex == 1,
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 5),
-                  child: Text(
-                    "账号密码登录",
+            ),
+
+            // 登录区域
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 登录方式选择
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildLoginOptionButton(
+                              index: 0,
+                              icon: Icons.phone_android,
+                              label: "手机号验证登录",
+                              isSelected: _singleSelectedIndex == 0,
+                              onTap: () => setState(() => _singleSelectedIndex = 0),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildLoginOptionButton(
+                              index: 1,
+                              icon: Icons.account_circle,
+                              label: "账号密码登录",
+                              isSelected: _singleSelectedIndex == 1,
+                              onTap: () => setState(() => _singleSelectedIndex = 1),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // 登录表单
+                      selectedComponent(_singleSelectedIndex),
+                    ],
                   ),
                 ),
-                onValueChangedAtIndex: (index, value) {
-                  setState(() {
-                    _singleSelectedIndex = index;
-                  });
-                },
               ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  } // 登录选项按钮构建方法
+
+  Widget _buildLoginOptionButton({
+    required int index,
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF409EFF) : Colors.transparent,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF409EFF) : Colors.grey.shade300,
+            width: 1.5,
           ),
         ),
-        selectedComponent(_singleSelectedIndex)
-      ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              // 选中时图标为白色，未选中时则用灰色
+              color: isSelected ? Colors.white : Colors.grey.shade600,
+              size: 20,
+            ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  // 选中时文字为白色，未选中时则灰色
+                  color: isSelected ? Colors.white : Colors.grey.shade600,
+                  fontSize: 14,
+                  // 选中时加粗
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// 自定义输入框样式
+  InputDecoration _buildInputDecoration(String hint, IconData icon) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: Icon(icon, color: const Color(0xFF666666)),
+      filled: true,
+      fillColor: const Color(0xFFF8F9FA),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFF2196F3), width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
 
@@ -103,8 +208,16 @@ class _LoginScreenState extends State<LoginScreen> {
     Global.saveMid(loginInfo.userInfo.mid);
     Global.saveMiyousheAcount(loginInfo.userInfo.aid);
     // 获取cookie
-    String cookie =
-        "login_uid=${Global.miyousheAcount}; account_id=${Global.miyousheAcount}; account_mid_v2=${loginInfo.userInfo.mid}; account_id_v2=${Global.miyousheAcount}; ltmid_v2=${loginInfo.userInfo.mid}; ltuid_v2=${Global.miyousheAcount}; ltuid=${Global.miyousheAcount}; stuid=${Global.miyousheAcount};stoken=${Global.stoken};mid=${loginInfo.userInfo.mid}";
+    String cookie = "login_uid=${Global.miyousheAcount}; "
+        "account_id=${Global.miyousheAcount}; "
+        "account_mid_v2=${loginInfo.userInfo.mid}; "
+        "account_id_v2=${Global.miyousheAcount}; "
+        "ltmid_v2=${loginInfo.userInfo.mid}; "
+        "ltuid_v2=${Global.miyousheAcount}; "
+        "ltuid=${Global.miyousheAcount}; "
+        "stuid=${Global.miyousheAcount};"
+        "stoken=${Global.stoken};"
+        "mid=${loginInfo.userInfo.mid}";
     // stoken 换 ltoken
     final ltoken = await miHoYoUtils.getLTokenBySToken(cookie);
     // 添加ltoken

@@ -75,5 +75,6 @@ flutter:
     - assets/images/hkrpg_cn.png
     - assets/images/nap_cn.png
     - assets/images/app.png
+    - assets/images/login_header.jpg
     - .env.dev
     - .env.prod
