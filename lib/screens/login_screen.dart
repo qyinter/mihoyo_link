@@ -7,11 +7,12 @@ import 'package:gt3_flutter_plugin/gt3_flutter_plugin.dart';
 import 'package:gt4_flutter_plugin/gt4_flutter_plugin.dart';
 import 'package:gt4_flutter_plugin/gt4_session_configuration.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart'; // 新增：用于点击跳转 GitHub
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_mmt.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
 import 'package:yuanmo_link/model/mihoyo_user_info.dart';
+import 'package:yuanmo_link/screens/index_screen.dart';
 import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_store.dart';
 
@@ -100,7 +101,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       );
     });
 
-    Navigator.of(context).pop();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const IndexScreen()),
+      (route) => false,
+    );
   }
 
   /// 手机号登录模块
