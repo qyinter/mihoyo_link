@@ -7,6 +7,7 @@ import 'package:gt3_flutter_plugin/gt3_flutter_plugin.dart';
 import 'package:gt4_flutter_plugin/gt4_flutter_plugin.dart';
 import 'package:gt4_flutter_plugin/gt4_session_configuration.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart'; // 新增：用于点击跳转 GitHub
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_mmt.dart';
 import 'package:yuanmo_link/model/mihoyo_result.dart';
@@ -527,10 +528,22 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     });
   }
 
+  // 跳转到指定网址（用于跳转 GitHub）
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // 这里不再是一个完整的 Column，而是将顶部和中间放进 body
       body: Column(
         children: [
           // 顶部背景图区域
@@ -557,7 +570,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             ),
           ),
 
-          // 中间区域：切换登录方式 & 登录表单
+          // 中间区域
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -589,6 +602,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         ),
                       ],
                     ),
+
                     // 根据索引动态渲染登录表单
                     if (_singleSelectedIndex == 0) _buildPhoneLogin() else _buildAccountLogin(),
                   ],
@@ -597,6 +611,54 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             ),
           ),
         ],
+      ),
+
+      // ---- 将底部区域放到这里，始终固定在屏幕底部 ----
+      bottomNavigationBar: Padding(
+        // 根据需要自行调整内边距
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+        child: Column(
+          // 让子内容包裹高度，同时保证在底部
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // GitHub 跳转
+            GestureDetector(
+              onTap: () {
+                _launchUrl("https://github.com/qyinter/mihoyo_link");
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/github_icon.png',
+                      width: 24,
+                      height: 24,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "前往GitHub查看开源仓库",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 简单免责声明
+            Text(
+              "免责声明：本项目仅供学习交流使用，严禁任何商业用途。"
+              "若因使用本项目引发任何纠纷或损害，均与作者无关。",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -76,5 +76,6 @@ flutter:
     - assets/images/nap_cn.png
     - assets/images/app.png
     - assets/images/login_header.jpg
+    - assets/images/github_icon.png
     - .env.dev
     - .env.prod
