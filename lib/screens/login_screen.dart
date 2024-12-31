@@ -13,12 +13,12 @@ import 'package:yuanmo_link/model/mihoyo_user_info.dart';
 import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_store.dart';
 
-class Password extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _PasswordState createState() => _PasswordState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _PasswordState extends State<Password> {
+class _LoginScreenState extends State<LoginScreen> {
   late String data;
   bool isLoading = true;
   int _singleSelectedIndex = 0;
@@ -29,7 +29,6 @@ class _PasswordState extends State<Password> {
   final TextEditingController accountController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  @override
   @override
   void initState() {
     super.initState();

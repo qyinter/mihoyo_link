@@ -192,7 +192,6 @@ CgGs52bFoYMtyi+xEQIDAQAB
           deviceModel: androidInfo.model,
           brand: androidInfo.brand,
         );
-        print(info.toJson());
         Global.saveFpInfo(info);
       } else {
         Global.saveFpInfo(
@@ -491,9 +490,6 @@ CgGs52bFoYMtyi+xEQIDAQAB
     if (rpcAigis != null) {
       headers["X-Rpc-Aigis"] = rpcAigis;
     }
-
-    print(headers);
-    print(rpcAigis);
 
     final Response result = await _dio.post(
       "https://passport-api.miyoushe.com/account/ma-cn-verifier/verifier/createLoginCaptcha",

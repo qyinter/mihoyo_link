@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:yuanmo_link/screens/index_screen.dart';
+import 'package:yuanmo_link/screens/login_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => const IndexScreen());
+      case '/login':
+        return MaterialPageRoute(builder: (_) => LoginScreen());
       default:
         return _errorRoute();
     }
