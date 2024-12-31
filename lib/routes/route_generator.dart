@@ -8,7 +8,7 @@ class RouteGenerator {
       case '/':
         return MaterialPageRoute(builder: (_) => const IndexScreen());
       case '/login':
-        return MaterialPageRoute(builder: (_) => LoginScreen());
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
       default:
         return _errorRoute();
     }

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yuanmo_link/common/mihoyo_utils.dart';
 import 'package:yuanmo_link/model/mihoyo_fp.dart';
+import 'package:yuanmo_link/screens/login_screen.dart';
 import 'package:yuanmo_link/store/global.dart';
 import 'package:yuanmo_link/store/global_store.dart';
 
@@ -69,9 +70,11 @@ class _IndexScreenState extends State<IndexScreen> with SingleTickerProviderStat
                       Provider.of<GlobalChangeNotifier>(context, listen: false).saveUserInfo(null);
                       Provider.of<GlobalChangeNotifier>(context, listen: false).saveGameRoleList([]);
                       Global.clearAll();
-                      // WidgetsBinding.instance.addPostFrameCallback((_) {
-                      //   _showLoginPicker();
-                      // });
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        (route) => false, // 返回 false 表示清除所有路由历史
+                      );
                     },
                     child: const Text('重新登录'),
                   )
