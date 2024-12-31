@@ -78,5 +78,6 @@ flutter:
     - assets/images/login_header.jpg
     - assets/images/github_icon.png
     - assets/images/background.jpg
+    - assets/images/miyouku.png
     - .env.dev
     - .env.prod
